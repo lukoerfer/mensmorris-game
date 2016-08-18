@@ -69,6 +69,7 @@
     <Compile Include="ViewModel\BoardVM.cs" />
     <Compile Include="ViewModel\PositionVM.cs" />
     <Compile Include="ViewModel\TileVM.cs" />
+    <Compile Include="ViewModel\ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -111,6 +112,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MensMorris.Bot\MensMorris.Bot.csproj">
+      <Project>{a1b7a9b5-38c9-465d-9dc5-bd84071f12b3}</Project>
+      <Name>MensMorris.Bot</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MensMorris.Engine\MensMorris.Engine.csproj">
       <Project>{5096cd3c-6ad0-445e-b871-6f130fa42b24}</Project>
       <Name>MensMorris.Engine</Name>

@@ -6,45 +6,76 @@
         xmlns:local="clr-namespace:MensMorris.Game"
         xmlns:helpers="clr-namespace:MensMorris.Game.Helpers"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="Mens Morris" MinHeight="500" MinWidth="700">
+    <!--Main-->
     <Grid>
-        <Grid.Resources>
-            <helpers:BooleanToVisibilityConverter x:Key="boolToVisibility" />
-            <helpers:CenterToBorderLocationConverter x:Key="centerToBorder" />
-            <helpers:SlotToColorConverter x:Key="slotToColor" />
-            <DataTemplate x:Key="ConnectionTemplate">
-                <Line X1="{Binding FirstPosition.Location.X}"
+        <!--Game-->
+        <Grid>
+            <Grid.Resources>
+                <helpers:BooleanToVisibilityConverter x:Key="boolToVisibility" />
+                <helpers:CenterToBorderLocationConverter x:Key="centerToBorder" />
+                <helpers:SlotToColorConverter x:Key="slotToColor" />
+                <DataTemplate x:Key="ConnectionTemplate">
+                    <Line X1="{Binding FirstPosition.Location.X}"
                       Y1="{Binding FirstPosition.Location.Y}"
                       X2="{Binding SecondPosition.Location.X}"
                       Y2="{Binding SecondPosition.Location.Y}"
                       Stroke="Black" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-            </DataTemplate>
-            <DataTemplate x:Key="PositionTemplate">
-                <Ellipse Width="5" Height="5"
+                </DataTemplate>
+                <DataTemplate x:Key="PositionTemplate">
+                    <Ellipse Width="5" Height="5"
                          Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='5'}"
                          Fill="Black">
-                </Ellipse>
-            </DataTemplate>
-            <DataTemplate x:Key="TileTemplate">
-                <Ellipse Width="10" Height="10"
+                    </Ellipse>
+                </DataTemplate>
+                <DataTemplate x:Key="TileTemplate">
+                    <Ellipse Width="10" Height="10"
                          Visibility="{Binding IsOnBoard, Converter={StaticResource boolToVisibility}}"
                          Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='10'}"
                          Fill="{Binding Slot, Converter={StaticResource slotToColor}}">
-                </Ellipse>
-            </DataTemplate>
-            <helpers:BoardElementTemplateSelector x:Key="BoardElementSelector"
+                    </Ellipse>
+                </DataTemplate>
+                <helpers:BoardElementTemplateSelector x:Key="BoardElementSelector"
                     PositionTemplate="{StaticResource PositionTemplate}"
                     ConnectionTemplate="{StaticResource ConnectionTemplate}"
                     TileTemplate="{StaticResource TileTemplate}" />
-        </Grid.Resources>
-        <Viewbox HorizontalAlignment="Center" Stretch="Uniform" >
-            <ItemsControl ItemsSource="{Binding Elements}" ItemTemplateSelector="{StaticResource BoardElementSelector}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas Height="100" Width="100" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </Viewbox>
+            </Grid.Resources>
+            <Grid.Effect>
+                <BlurEffect Radius="40" />
+            </Grid.Effect>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Viewbox Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Center" Stretch="Uniform" >
+                <ItemsControl ItemsSource="{Binding Elements}" ItemTemplateSelector="{StaticResource BoardElementSelector}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas Height="100" Width="100" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Viewbox>
+        </Grid>
+        <!--Settings-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="500" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="400" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="5" Background="White">
+                
+            </Border>
+        </Grid>
     </Grid>
 </Window>

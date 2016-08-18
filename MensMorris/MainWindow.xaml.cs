@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using MensMorris.Bot;
 using MensMorris.Engine;
 using MensMorris.Game.ViewModel;
 
@@ -21,7 +22,7 @@ namespace MensMorris.Game
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IPlayer
+    public partial class MainWindow : Window
     {
         private Match Match;
 
@@ -32,26 +33,11 @@ namespace MensMorris.Game
         public MainWindow()
         {
             this.InitializeComponent();
-            this.Match = new Match(this, this);
+            this.Match = new Match(new RandomBot(), new RandomBot());
             this.ViewModel = new BoardVM(this.Match);
             this.DataContext = this.ViewModel;
             this.Randomizer = new Random();
             this.Match.Start();
-        }
-
-        public KickAction SelectKickAction(List<KickAction> possibleActions, Match match)
-        {
-            return possibleActions.Skip(this.Randomizer.Next(possibleActions.Count)).First();
-        }
-
-        public MoveAction SelectMoveAction(List<MoveAction> possibleActions, Match match)
-        {
-            return possibleActions.Skip(this.Randomizer.Next(possibleActions.Count)).First();
-        }
-
-        public PlaceAction SelectPlaceAction(List<PlaceAction> possibleActions, Match match)
-        {
-            return possibleActions.Skip(this.Randomizer.Next(possibleActions.Count)).First();
         }
     }
 }
