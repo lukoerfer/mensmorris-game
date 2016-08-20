@@ -9,7 +9,7 @@ using PropertyChanged;
 
 using MensMorris.Engine;
 
-namespace MensMorris.Game.ViewModel
+namespace MensMorris.Game.ViewModel.Board
 {
     [ImplementPropertyChanged]
     public class TileVM

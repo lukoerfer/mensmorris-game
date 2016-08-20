@@ -7,7 +7,7 @@ using System.Windows;
 
 using MensMorris.Engine;
 
-namespace MensMorris.Game.ViewModel
+namespace MensMorris.Game.ViewModel.Board
 {
     public class PositionVM
     {

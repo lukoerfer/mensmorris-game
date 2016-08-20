@@ -65,11 +65,13 @@
     <Compile Include="Helpers\BooleanToVisibilityConverter.cs" />
     <Compile Include="Helpers\CenterToBorderLocationConverter.cs" />
     <Compile Include="Helpers\SlotToColorConverter.cs" />
-    <Compile Include="ViewModel\ConnectionVM.cs" />
-    <Compile Include="ViewModel\BoardVM.cs" />
-    <Compile Include="ViewModel\PositionVM.cs" />
-    <Compile Include="ViewModel\TileVM.cs" />
-    <Compile Include="ViewModel\ViewModel.cs" />
+    <Compile Include="ViewModel\Board\ConnectionVM.cs" />
+    <Compile Include="ViewModel\Board\BoardVM.cs" />
+    <Compile Include="ViewModel\Board\PositionVM.cs" />
+    <Compile Include="ViewModel\Board\TileVM.cs" />
+    <Compile Include="ViewModel\MainVM.cs" />
+    <Compile Include="ViewModel\MatchVM.cs" />
+    <Compile Include="ViewModel\StartVM.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -82,6 +84,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\MatchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\StartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

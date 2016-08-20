@@ -9,7 +9,7 @@ using PropertyChanged;
 
 using MensMorris.Engine;
 
-namespace MensMorris.Game.ViewModel
+namespace MensMorris.Game.ViewModel.Board
 {
     [ImplementPropertyChanged]
     public class BoardVM
@@ -22,7 +22,7 @@ namespace MensMorris.Game.ViewModel
 
         public ObservableCollection<TileVM> Tiles { get; private set; }
 
-        public ObservableCollection<object> Elements
+        public ObservableCollection<object> BoardElements
         {
             get
             {
@@ -52,7 +52,6 @@ namespace MensMorris.Game.ViewModel
             this.Tiles = new ObservableCollection<TileVM>(
                 this.Model.GetTiles().Select(tile => new TileVM(this, tile))
             );
-            Console.WriteLine(this.Tiles.Count());
         }
 
         public PositionVM GetPosition(int ring, int number)

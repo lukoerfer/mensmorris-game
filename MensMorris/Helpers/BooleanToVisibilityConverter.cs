@@ -11,15 +11,22 @@ namespace MensMorris.Game.Helpers
 {
     public class BooleanToVisibilityConverter : IValueConverter
     {
+        private const String COLLAPSED = "collapse";
+        private const String INVERT = "invert";
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool)
+            if (value is bool && parameter is string)
             {
-                return (bool)value ? Visibility.Visible : Visibility.Hidden;
+                String parameters = (string)parameter;
+                bool isVisible = (bool)value;
+                if (parameters.Contains(INVERT)) isVisible = !isVisible;
+                Visibility notShown = parameters.Contains(COLLAPSED) ? Visibility.Collapsed : Visibility.Hidden;
+                return isVisible ? Visibility.Visible : notShown;
             }
             else
             {
-                throw new ArgumentException("Wrong value type. Boolean required!");
+                throw new ArgumentException("Wrong value or parameter type.");
             }
         }
 

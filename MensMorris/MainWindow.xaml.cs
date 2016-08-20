@@ -24,20 +24,11 @@ namespace MensMorris.Game
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Match Match;
-
-        private BoardVM ViewModel;
-
-        private Random Randomizer;
 
         public MainWindow()
         {
             this.InitializeComponent();
-            this.Match = new Match(new RandomBot(), new RandomBot());
-            this.ViewModel = new BoardVM(this.Match);
-            this.DataContext = this.ViewModel;
-            this.Randomizer = new Random();
-            this.Match.Start();
+            this.DataContext = new MainVM();
         }
     }
 }

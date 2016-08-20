@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace MensMorris.Game.ViewModel
 {
-    public class ViewModel
+    public class StartVM
     {
-        public BoardVM Board { get; set; }
-
-        public ViewModel()
-        {
-
-        }
     }
 }
