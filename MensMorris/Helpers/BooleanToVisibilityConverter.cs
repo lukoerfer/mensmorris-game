@@ -16,6 +16,7 @@ namespace MensMorris.Game.Helpers
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            parameter = parameter ?? String.Empty;
             if (value is bool && parameter is string)
             {
                 String parameters = (string)parameter;

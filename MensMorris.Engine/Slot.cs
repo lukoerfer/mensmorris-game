@@ -8,20 +8,15 @@ namespace MensMorris.Engine
 {
     public class Slot
     {
+        public event EventHandler IsOnTurnChanged;
+
         public int ID { get; private set; }
 
-        private IPlayer player;
+        public IPlayer Player { get; private set; }
 
-        private List<Tile> tiles;
+        private List<Tile> Tiles;
 
-        public IEnumerable<Tile> Tiles
-        {
-            get
-            {
-                // Return copy to prevent manipulation
-                return this.tiles.ToList();
-            }
-        }
+        public bool IsOnTurn { get; private set; }
 
         internal bool NoPossibleMove { private get; set; }
 
@@ -29,18 +24,18 @@ namespace MensMorris.Engine
         {
             get
             {
-                return this.NoPossibleMove || this.tiles.Count(tile => tile.At != null) < 3;
+                return this.NoPossibleMove || this.Tiles.Count(tile => tile.At != null) < 3;
             }
         }
 
         public Slot(IPlayer player, int id)
         {
             this.ID = id;
-            this.player = player;
-            this.tiles = new List<Tile>();
+            this.Player = player;
+            this.Tiles = new List<Tile>();
             for (int i = 0; i < 9; i++)
             {
-                this.tiles.Add(new Tile(this));
+                this.Tiles.Add(new Tile(this));
             }
         }
 
@@ -51,10 +46,10 @@ namespace MensMorris.Engine
                 .Select(pos => new PlaceAction(this.GetUnusedTile(), pos))
                 .ToList();
             // Let the player select one action
-            PlaceAction selectedAction = this.player.SelectPlaceAction(possibleActions, match);
+            PlaceAction selectedAction = this.Player.SelectPlaceAction(possibleActions, match);
             if (!possibleActions.Contains(selectedAction)) throw new Exception("Illegal player action");
             // Execute the selected action
-            selectedAction.PlacedTile.GoTo(selectedAction.TargetPosition);
+            selectedAction.ToPlace.GoTo(selectedAction.Target);
             return selectedAction;
         }
 
@@ -74,37 +69,50 @@ namespace MensMorris.Engine
             else
             {
                 // Let the player select one action
-                MoveAction selectedAction = this.player.SelectMoveAction(possibleActions, match);
+                MoveAction selectedAction = this.Player.SelectMoveAction(possibleActions, match);
                 if (!possibleActions.Contains(selectedAction)) throw new Exception("Illegal player action!");
                 // Execute the selected action
-                selectedAction.MovingTile.GoTo(selectedAction.TargetPosition);
+                selectedAction.ToMove.GoTo(selectedAction.Target);
                 return selectedAction;
             }
         }
 
         internal KickAction DoKickAction(Match match)
         {
+            IEnumerable<Tile> opponentTiles = match.GetSlot((this.ID == 0) ? 1 : 0).GetTilesOnBoard();
             // Determine the possible actions
-            List<KickAction> possibleActions = match.GetSlot((this.ID == 0) ? 1 : 0)
-                .GetTilesOnBoard()
+            List<KickAction> possibleActions = (opponentTiles.Any(tile => !tile.FormsMill()) ?
+                opponentTiles.Where(tile => !tile.FormsMill()) : opponentTiles)
                 .Select(tile => new KickAction(tile))
                 .ToList();
             // Let the player select one action
-            KickAction selectedAction = this.player.SelectKickAction(possibleActions, match);
+            KickAction selectedAction = this.Player.SelectKickAction(possibleActions, match);
             if (!possibleActions.Contains(selectedAction)) throw new Exception("Illegal player action");
             // Execute the selected action
-            selectedAction.KickedTile.GoTo(null);
+            selectedAction.ToKick.GoTo(null);
             return selectedAction;
         }
 
-        public IEnumerable<Tile> GetTilesOnBoard()
+        internal void SetIsOnTurn(bool isOnTurn)
         {
-            return this.tiles.Where(tile => tile.At != null);
+            this.IsOnTurn = isOnTurn;
+            this.IsOnTurnChanged?.BeginInvoke(this, EventArgs.Empty, this.IsOnTurnChanged.EndInvoke, null);
+        }
+
+        public List<Tile> GetTiles()
+        {
+            // Return copy to prevent manipulation
+            return this.Tiles.ToList();
+        }
+
+        public List<Tile> GetTilesOnBoard()
+        {
+            return this.Tiles.Where(tile => tile.At != null).ToList();
         }
 
         public Tile GetUnusedTile()
         {
-            return this.tiles.First(tile => tile.At == null);
+            return this.Tiles.First(tile => tile.At == null);
         }
 
         public bool DoesOwn(BoardPosition pos)

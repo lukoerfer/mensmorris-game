@@ -9,25 +9,11 @@ namespace MensMorris.Engine
 {
     public class Match
     {
-        private List<BoardPosition> board;
+        public event EventHandler Finished;
 
-        public IEnumerable<BoardPosition> Board
-        {
-            get
-            {
-                return this.board.ToList();
-            }
-        }
+        private List<BoardPosition> Board;
 
-        private Slot[] slots;
-
-        public IEnumerable<Slot> Slots
-        {
-            get
-            {
-                return this.slots.ToList();
-            }
-        }
+        private Slot[] Slots;
 
         public GamePhase Phase { get; private set; }
 
@@ -36,22 +22,22 @@ namespace MensMorris.Engine
         public Match(IPlayer firstPlayer, IPlayer secondPlayer)
         {
             // Set default round sleep time to one 1ms
-            this.WaitTime = new TimeSpan(0, 0, 0, 0, 20);
+            this.WaitTime = new TimeSpan(0, 0, 0, 0, 500);
             // Set initial phase
             this.Phase = GamePhase.PlacingPhase;
             // Create player slots
-            this.slots = new Slot[2];
-            this.slots[0] = new Slot(firstPlayer, 0);
-            this.slots[1] = new Slot(secondPlayer, 1);
+            this.Slots = new Slot[2];
+            this.Slots[0] = new Slot(firstPlayer, 0);
+            this.Slots[1] = new Slot(secondPlayer, 1);
             // Build the board
-            this.board = new List<BoardPosition>();
+            this.Board = new List<BoardPosition>();
             BoardPosition[] middle = new BoardPosition[4];
             for (int ring = 1; ring <= 3; ring++) // For each ring
             {
                 Direction direction = Direction.Left;
                 // Create and remember first position
                 BoardPosition first = new BoardPosition(ring, 0);
-                this.board.Add(first);
+                this.Board.Add(first);
                 // Remember previous position
                 BoardPosition previous = first;
                 for (int a = 0; a <= 3; a++) // For each side
@@ -76,7 +62,7 @@ namespace MensMorris.Engine
                             middle[a] = position;
                         }
                         // Add position to board
-                        this.board.Add(position);
+                        this.Board.Add(position);
                         previous = position;
                     }
                 }
@@ -106,28 +92,30 @@ namespace MensMorris.Engine
             int placingCounter = 1;
             while (!this.IsGameDone() && !this.shouldStop)
             {
+                // Assign the current slot
+                currentSlot = this.Slots[currentSlotId];
+                // Set OnTurn state for current slot
+                currentSlot.SetIsOnTurn(true);
                 // Wait the configured timespan
                 Thread.Sleep(this.WaitTime);
-                // Assign the current slot
-                currentSlot = this.slots[currentSlotId];
                 switch (this.Phase)
                 {
                     case GamePhase.PlacingPhase:
                         // Perform the place action
                         PlaceAction place = currentSlot.DoPlaceAction(this);
-                        usedTile = (place != null) ? place.PlacedTile : null;
+                        usedTile = (place != null) ? place.ToPlace : null;
                         // Check for phase transition
                         if (placingCounter++ == 18) this.Phase = GamePhase.MovingPhase;
                         break;
                     case GamePhase.MovingPhase:
                         // Perform the move action
                         MoveAction move = currentSlot.DoMoveAction(this);
-                        usedTile = (move != null) ? move.MovingTile : null;
+                        usedTile = (move != null) ? move.ToMove : null;
                         break;
                 }
                 if (usedTile != null)
                 {
-                    if (usedTile.DoesFormMill())
+                    if (usedTile.FormsMill())
                     {
                         KickAction kick = currentSlot.DoKickAction(this);
                     }
@@ -136,29 +124,58 @@ namespace MensMorris.Engine
                 {
                     currentSlot.NoPossibleMove = true;
                 }
+                // Reset OnTurn state for current slot
+                currentSlot.SetIsOnTurn(false);
                 // Switch the player to either first or second player
                 currentSlotId = (currentSlotId == 0) ? 1 : 0;
             }
+            // Inform about the finished game
+            this.Finished?.BeginInvoke(this, EventArgs.Empty, this.Finished.EndInvoke, null);
+        }
+
+        public List<BoardPosition> GetBoard()
+        {
+            return this.Board.ToList();
+        }
+
+        public Match SimulateAction(BaseAction action)
+        {
+            return this;
+        }
+
+        public List<Slot> GetSlots()
+        {
+            return this.Slots.ToList();
         }
 
         public Slot GetSlot(int number)
         {
-            return this.slots[number];
+            return this.Slots[number];
         }
 
-        public IEnumerable<Tile> GetTiles()
+        public List<Tile> GetTiles()
         {
-            return this.slots.Select(slot => slot.Tiles).Aggregate((tiles1, tiles2) => tiles1.Union(tiles2));
+            return this.Slots
+                .Select(slot => slot.GetTiles())
+                .Aggregate<IEnumerable<Tile>>((tiles1, tiles2) => tiles1.Union(tiles2))
+                .ToList();
         }
 
-        public IEnumerable<BoardPosition> GetEmptyPositions()
+        public List<BoardPosition> GetEmptyPositions()
         {
-            return this.board.Where(pos => pos.Current == null);
+            return this.Board
+                .Where(pos => pos.Current == null)
+                .ToList();
         }
 
         public bool IsGameDone()
         {
-            return this.Phase == GamePhase.MovingPhase && this.slots.Any(slot => slot.HasLost);
+            return this.Phase == GamePhase.MovingPhase && this.Slots.Any(slot => slot.HasLost);
+        }
+
+        public Slot GetWinnerSlot()
+        {
+            return this.IsGameDone() ? this.Slots.Single(slot => !slot.HasLost) : null;
         }
 
     }

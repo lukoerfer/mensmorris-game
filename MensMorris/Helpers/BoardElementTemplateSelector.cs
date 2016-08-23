@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-using MensMorris.Game.ViewModel.Board;
+using MensMorris.Game.ViewModel;
 
 namespace MensMorris.Game.Helpers
 {

@@ -15,5 +15,5 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <ContentPresenter Content="{Binding CurrentContent}" />
+    <ContentPresenter Content="{Binding CurrentModel}" />
 </Window>

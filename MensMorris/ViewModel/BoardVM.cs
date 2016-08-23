@@ -9,12 +9,11 @@ using PropertyChanged;
 
 using MensMorris.Engine;
 
-namespace MensMorris.Game.ViewModel.Board
+namespace MensMorris.Game.ViewModel
 {
     [ImplementPropertyChanged]
     public class BoardVM
     {
-        public Match Model { get; private set; }
 
         public IEnumerable<PositionVM> Positions { get; private set; }
 
@@ -34,14 +33,12 @@ namespace MensMorris.Game.ViewModel.Board
             }
         }
 
-        public BoardVM(Match model)
+        public BoardVM(List<BoardPosition> board, List<Tile> tiles)
         {
-            this.Model = model;
             // Create a view model for each board position
-            this.Positions = this.Model.Board
-                .Select(pos => new PositionVM(this, pos));
+            this.Positions = board.Select(pos => new PositionVM(this, pos));
             // Create a view model for each connection between two board positions
-            this.Connections = this.Model.Board
+            this.Connections = board
                 .Select(
                     pos => pos.GetNeighbors()
                         .Where(neigh => pos.Ring < neigh.Ring || ( pos.Ring == neigh.Ring && pos.Number < neigh.Number))
@@ -50,7 +47,7 @@ namespace MensMorris.Game.ViewModel.Board
                 .Aggregate((one, two) => one.Union(two));
             // Create a view model for each tile
             this.Tiles = new ObservableCollection<TileVM>(
-                this.Model.GetTiles().Select(tile => new TileVM(this, tile))
+                tiles.Select(tile => new TileVM(this, tile))
             );
         }
 

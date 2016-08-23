@@ -27,10 +27,10 @@ namespace MensMorris.Engine
             this.At = pos;
             // Set the new board position
             if (this.At != null) this.At.SetCurrent(this);
-            this.AtChanged?.Invoke(this, EventArgs.Empty);
+            this.AtChanged?.BeginInvoke(this, EventArgs.Empty, this.AtChanged.EndInvoke, null);
         }
 
-        public bool DoesFormMill()
+        public bool FormsMill()
         {
             if (this.At != null)
             {

@@ -22,6 +22,11 @@ namespace MensMorris.Bot
 
         }
 
+        public String GetName()
+        {
+            return "Random Bot";
+        }
+
         public KickAction SelectKickAction(List<KickAction> possibleActions, Match match)
         {
             return possibleActions

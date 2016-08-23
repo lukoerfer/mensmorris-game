@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MensMorris.Game.View"
+                    xmlns:vm="clr-namespace:MensMorris.Game.ViewModel">
+    <DataTemplate DataType="{x:Type vm:SlotVM}">
+        <Border BorderBrush="Blue" BorderThickness="3" CornerRadius="10">
+            <Label Content="{Binding Name}" FontSize="20" HorizontalAlignment="Center" />
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

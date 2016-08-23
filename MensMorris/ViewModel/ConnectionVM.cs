@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MensMorris.Game.ViewModel.Board
+namespace MensMorris.Game.ViewModel
 {
     public class ConnectionVM
     {
