@@ -1,9 +1,4 @@
 ﻿using PropertyChanged;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MensMorris.Game.ViewModel
 {
@@ -16,23 +11,23 @@ namespace MensMorris.Game.ViewModel
         {
             get
             {
-                return this.Message != String.Empty;
+                return this.Message != string.Empty;
             }
         }
 
         public ScreenMessageVM()
         {
-            this.Message = String.Empty;
+            this.Message = string.Empty;
         }
 
-        public void Set(String message)
+        public void Set(string message)
         {
             this.Message = message;
         }
 
         public void Reset()
         {
-            this.Message = String.Empty;
+            this.Message = string.Empty;
         }
 
     }

@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MensMorris.Game.View"
+                    xmlns:vm="clr-namespace:MensMorris.Game.ViewModel">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Converter.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <DataTemplate DataType="{x:Type vm:TargetVM}">
+        <Button Height="10" Width="10"
+                Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='10'}"
+                Command="{Binding Choose}">
+            <Button.Template>
+                <ControlTemplate>
+                    <Ellipse Fill="Orange" Opacity="0.5" />
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+    </DataTemplate>
+</ResourceDictionary>

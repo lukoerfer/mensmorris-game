@@ -6,11 +6,11 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
             <Label>Player selection</Label>
             <StackPanel Orientation="Horizontal">
-                <ComboBox ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding FirstPlayer}" >
-
+                <ComboBox ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding FirstPlayer}"
+                          SelectedIndex="0">
                 </ComboBox>
-                <ComboBox ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding SecondPlayer}" >
-
+                <ComboBox ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding SecondPlayer}"
+                          SelectedIndex="0">
                 </ComboBox>
             </StackPanel>
             <Label>Rules</Label>

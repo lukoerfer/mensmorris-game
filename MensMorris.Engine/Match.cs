@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MensMorris.Engine
 {
@@ -95,7 +93,7 @@ namespace MensMorris.Engine
                 // Assign the current slot
                 currentSlot = this.Slots[currentSlotId];
                 // Set OnTurn state for current slot
-                currentSlot.SetIsOnTurn(true);
+                currentSlot.SetOnTurn(true);
                 // Wait the configured timespan
                 Thread.Sleep(this.WaitTime);
                 switch (this.Phase)
@@ -125,7 +123,7 @@ namespace MensMorris.Engine
                     currentSlot.NoPossibleMove = true;
                 }
                 // Reset OnTurn state for current slot
-                currentSlot.SetIsOnTurn(false);
+                currentSlot.SetOnTurn(false);
                 // Switch the player to either first or second player
                 currentSlotId = (currentSlotId == 0) ? 1 : 0;
             }

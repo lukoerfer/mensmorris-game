@@ -2,9 +2,33 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:MensMorris.Game.View"
                     xmlns:vm="clr-namespace:MensMorris.Game.ViewModel">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Converter.xaml" />
+    </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:SlotVM}">
-        <Border BorderBrush="Blue" BorderThickness="3" CornerRadius="10">
-            <Label Content="{Binding Name}" FontSize="20" HorizontalAlignment="Center" />
+        <Border BorderBrush="{Binding SlotNumber, Converter={StaticResource slotToColor}}" BorderThickness="5" CornerRadius="25">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="White" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsOnTurn}" Value="True">
+                            <Setter Property="Background" Value="{Binding SlotNumber, Converter={StaticResource slotToColor}}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Label Content="{Binding Name}" FontSize="26" HorizontalAlignment="Center">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Foreground" Value="{Binding SlotNumber, Converter={StaticResource slotToColor}}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsOnTurn}" Value="True">
+                                <Setter Property="Foreground" Value="White" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
         </Border>
     </DataTemplate>
 </ResourceDictionary>

@@ -1,51 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:MensMorris.Game.View"
-                    xmlns:vm="clr-namespace:MensMorris.Game.ViewModel"
-                    xmlns:helpers="clr-namespace:MensMorris.Game.Helpers">
+                    xmlns:vm="clr-namespace:MensMorris.Game.ViewModel">
+    <!-- Link required resources-->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Converter.xaml" />
+        <ResourceDictionary Source="SlotView.xaml" />
+        <ResourceDictionary Source="ConnectionView.xaml" />
+        <ResourceDictionary Source="PositionView.xaml" />
+        <ResourceDictionary Source="TileView.xaml" />
+        <ResourceDictionary Source="TargetView.xaml" />
+        <ResourceDictionary Source="KickView.xaml" />
+    </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:MatchVM}">
-        <!-- Define required resources-->
-        <DataTemplate.Resources>
-            <ResourceDictionary>
-                <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="SlotView.xaml" />
-                </ResourceDictionary.MergedDictionaries>
-                <helpers:BooleanToVisibilityConverter x:Key="boolToVisibility" />
-                <helpers:CenterToBorderLocationConverter x:Key="centerToBorder" />
-                <helpers:SlotToColorConverter x:Key="slotToColor" />
-                <DataTemplate x:Key="ConnectionTemplate">
-                    <Line X1="{Binding FirstPosition.Location.X}"
-                      Y1="{Binding FirstPosition.Location.Y}"
-                      X2="{Binding SecondPosition.Location.X}"
-                      Y2="{Binding SecondPosition.Location.Y}"
-                      Stroke="Black" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-                </DataTemplate>
-                <DataTemplate x:Key="PositionTemplate">
-                    <Ellipse Width="5" Height="5"
-                         Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='5'}"
-                         Fill="Black">
-                    </Ellipse>
-                </DataTemplate>
-                <DataTemplate x:Key="TileTemplate">
-                    <Button Width="10" Height="10"
-                        Visibility="{Binding IsOnBoard, Converter={StaticResource boolToVisibility}, ConverterParameter='collapse'}"
-                        Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='10'}"
-                        Command="{Binding Select}">
-                        <Button.Template>
-                            <ControlTemplate>
-                                <Ellipse 
-                                    Fill="{Binding Slot, Converter={StaticResource slotToColor}}">
-                                </Ellipse>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </DataTemplate>
-                <helpers:BoardElementTemplateSelector x:Key="BoardElementSelector"
-                    PositionTemplate="{StaticResource PositionTemplate}"
-                    ConnectionTemplate="{StaticResource ConnectionTemplate}"
-                    TileTemplate="{StaticResource TileTemplate}" />
-            </ResourceDictionary>
-        </DataTemplate.Resources>
         <Grid>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -71,8 +38,8 @@
                 </Grid.Style>
                 <ContentPresenter Content="{Binding FirstSlot}" Grid.Row="0" Margin="20" VerticalAlignment="Center" />
                 <ContentPresenter Content="{Binding SecondSlot}" Grid.Row="1" Margin="20" VerticalAlignment="Center"  />
-                <Viewbox DataContext="{Binding Board}" Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Center" Stretch="Uniform" >
-                    <ItemsControl ItemsSource="{Binding BoardElements}" ItemTemplateSelector="{StaticResource BoardElementSelector}">
+                <Viewbox Margin="20" DataContext="{Binding Board}" Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Center" Stretch="Uniform" >
+                    <ItemsControl ItemsSource="{Binding BoardElements}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Canvas Height="100" Width="100" />

@@ -88,8 +88,10 @@
     <Compile Include="BotCollector.cs" />
     <Compile Include="ViewModel\ConnectionVM.cs" />
     <Compile Include="ViewModel\BoardVM.cs" />
+    <Compile Include="ViewModel\KickVM.cs" />
     <Compile Include="ViewModel\PositionVM.cs" />
     <Compile Include="ViewModel\SlotVM.cs" />
+    <Compile Include="ViewModel\TargetVM.cs" />
     <Compile Include="ViewModel\TileVM.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="ViewModel\MatchVM.cs" />
@@ -108,7 +110,23 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\ConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Converter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\KickView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MatchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PositionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -117,6 +135,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\StartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TargetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TileView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

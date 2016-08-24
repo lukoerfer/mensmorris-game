@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 using MensMorris.Engine;
 using MensMorris.Bot;
@@ -32,8 +29,11 @@ namespace MensMorris.Game.ViewModel
             // Init the slot view models
             this.FirstSlot = new SlotVM(this.Match.GetSlot(0));
             this.SecondSlot = new SlotVM(this.Match.GetSlot(1));
+            // Init the cross-thread waiter
+            this.ActionWaiter = new AutoResetEvent(false);
             // Init the board view model
             this.Board = new BoardVM(this.Match.GetBoard(), this.Match.GetTiles());
+            this.Board.ActionChosen += OnActionChosen;
             // Init the screen message view model
             this.ScreenMessage = new ScreenMessageVM();
             // Start the match
@@ -50,19 +50,35 @@ namespace MensMorris.Game.ViewModel
             return "Player";
         }
 
-        public PlaceAction SelectPlaceAction(List<PlaceAction> possibleActions, Match match)
+        private AutoResetEvent ActionWaiter;
+
+        private BaseAction ChosenAction;
+
+        private void OnActionChosen(object sender, BaseAction chosenAction)
         {
-            return possibleActions.First();
+            this.ChosenAction = chosenAction;
+            this.ActionWaiter.Set();
         }
 
-        public MoveAction SelectMoveAction(List<MoveAction> possibleActions, Match match)
+        public PlaceAction ChoosePlaceAction(List<PlaceAction> possibleActions, Match match)
         {
-            return possibleActions.First();
+            this.Board.SetPlaceActions(possibleActions);
+            this.ActionWaiter.WaitOne();
+            return this.ChosenAction as PlaceAction;
         }
 
-        public KickAction SelectKickAction(List<KickAction> possibleActions, Match match)
+        public MoveAction ChooseMoveAction(List<MoveAction> possibleActions, Match match)
         {
-            return possibleActions.First();
+            this.Board.SetMoveActions(possibleActions);
+            this.ActionWaiter.WaitOne();
+            return this.ChosenAction as MoveAction;
+        }
+
+        public KickAction ChooseKickAction(List<KickAction> possibleActions, Match match)
+        {
+            this.Board.SetKickActions(possibleActions);
+            this.ActionWaiter.WaitOne();
+            return this.ChosenAction as KickAction;
         }
     }
 }

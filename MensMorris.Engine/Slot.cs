@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MensMorris.Engine
 {
@@ -28,6 +26,14 @@ namespace MensMorris.Engine
             }
         }
 
+        public bool CanFly
+        {
+            get
+            {
+                return this.Tiles.Count(tile => tile.At != null) < 4;
+            }
+        }
+
         public Slot(IPlayer player, int id)
         {
             this.ID = id;
@@ -46,20 +52,20 @@ namespace MensMorris.Engine
                 .Select(pos => new PlaceAction(this.GetUnusedTile(), pos))
                 .ToList();
             // Let the player select one action
-            PlaceAction selectedAction = this.Player.SelectPlaceAction(possibleActions, match);
-            if (!possibleActions.Contains(selectedAction)) throw new Exception("Illegal player action");
+            PlaceAction chosenAction = this.Player.ChoosePlaceAction(possibleActions, match);
+            if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action");
             // Execute the selected action
-            selectedAction.ToPlace.GoTo(selectedAction.Target);
-            return selectedAction;
+            chosenAction.ToPlace.GoTo(chosenAction.Target);
+            return chosenAction;
         }
 
         internal MoveAction DoMoveAction(Match match)
         {
             // Determine the possible actions
             List<MoveAction> possibleActions = this.GetTilesOnBoard()
-                .Select(tile => tile.At.GetNeighbors()
-                    .Where(neigh => neigh.IsFree)
-                    .Select(neigh => new MoveAction(tile, neigh)))
+                .Select(tile => 
+                    (this.CanFly ? match.GetEmptyPositions() : tile.At.GetNeighbors().Where(other => other.IsFree))
+                    .Select(other => new MoveAction(tile, other)))
                 .Aggregate((actions1, actions2) => actions1.Concat(actions2))
                 .ToList();
             if (possibleActions.Count() == 0)
@@ -69,11 +75,11 @@ namespace MensMorris.Engine
             else
             {
                 // Let the player select one action
-                MoveAction selectedAction = this.Player.SelectMoveAction(possibleActions, match);
-                if (!possibleActions.Contains(selectedAction)) throw new Exception("Illegal player action!");
+                MoveAction chosenAction = this.Player.ChooseMoveAction(possibleActions, match);
+                if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action!");
                 // Execute the selected action
-                selectedAction.ToMove.GoTo(selectedAction.Target);
-                return selectedAction;
+                chosenAction.ToMove.GoTo(chosenAction.Target);
+                return chosenAction;
             }
         }
 
@@ -86,14 +92,14 @@ namespace MensMorris.Engine
                 .Select(tile => new KickAction(tile))
                 .ToList();
             // Let the player select one action
-            KickAction selectedAction = this.Player.SelectKickAction(possibleActions, match);
-            if (!possibleActions.Contains(selectedAction)) throw new Exception("Illegal player action");
+            KickAction chosenAction = this.Player.ChooseKickAction(possibleActions, match);
+            if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action");
             // Execute the selected action
-            selectedAction.ToKick.GoTo(null);
-            return selectedAction;
+            chosenAction.ToKick.GoTo(null);
+            return chosenAction;
         }
 
-        internal void SetIsOnTurn(bool isOnTurn)
+        internal void SetOnTurn(bool isOnTurn)
         {
             this.IsOnTurn = isOnTurn;
             this.IsOnTurnChanged?.BeginInvoke(this, EventArgs.Empty, this.IsOnTurnChanged.EndInvoke, null);

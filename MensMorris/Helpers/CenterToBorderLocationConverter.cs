@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -13,10 +11,10 @@ namespace MensMorris.Game.Helpers
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Point && parameter is String)
+            if (value is Point && parameter is string)
             {
                 Point center = (Point)value;
-                Size size = CenterToBorderLocationConverter.extractParameter((String)parameter);
+                Size size = CenterToBorderLocationConverter.extractParameter((string)parameter);
                 Thickness border = new Thickness(center.X - size.Width / 2, center.Y - size.Height / 2, 0, 0);
                 return border;
             }
@@ -32,14 +30,14 @@ namespace MensMorris.Game.Helpers
             throw new NotSupportedException();
         }
 
-        private static Size extractParameter(String parameter)
+        private static Size extractParameter(string parameter)
         {
-            String[] sizeStrings = parameter.Split(new char[] { ' ' }, 2);
+            string[] sizeStrings = parameter.Split(new char[] { ' ' }, 2);
             IEnumerable<int> sizes = sizeStrings.Select(str => parseInt(str)).Where(res => res.HasValue).Select(res => res.Value);
             return new Size(sizes.FirstOrDefault(), sizes.LastOrDefault());
         }
 
-        private static int? parseInt(String str)
+        private static int? parseInt(string str)
         {
             int result;
             return Int32.TryParse(str, out result) ? new int?(result) : null;

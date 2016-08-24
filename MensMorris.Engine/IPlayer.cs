@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MensMorris.Engine
 {
     public interface IPlayer
     {
-        String GetName();
+        string GetName();
 
-        PlaceAction SelectPlaceAction(List<PlaceAction> possibleActions, Match match);
+        PlaceAction ChoosePlaceAction(List<PlaceAction> possibleActions, Match match);
 
-        MoveAction SelectMoveAction(List<MoveAction> possibleActions, Match match);
+        MoveAction ChooseMoveAction(List<MoveAction> possibleActions, Match match);
 
-        KickAction SelectKickAction(List<KickAction> possibleActions, Match match);
+        KickAction ChooseKickAction(List<KickAction> possibleActions, Match match);
 
     }
 }

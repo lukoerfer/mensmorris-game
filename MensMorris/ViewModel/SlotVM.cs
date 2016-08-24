@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using MensMorris.Engine;
 using PropertyChanged;
@@ -14,7 +10,11 @@ namespace MensMorris.Game.ViewModel
     {
         private Slot Model;
 
-        public String Name { get; set; }
+        [DoNotNotify]
+        public int SlotNumber { get; set; }
+
+        [DoNotNotify]
+        public string Name { get; set; }
 
         public bool IsOnTurn { get; set; }
 
@@ -22,6 +22,7 @@ namespace MensMorris.Game.ViewModel
         {
             this.Model = slot;
             this.Model.IsOnTurnChanged += OnIsOnTurnChanged;
+            this.SlotNumber = this.Model.ID;
             this.Name = this.Model.Player.GetName();
             this.IsOnTurn = this.Model.IsOnTurn;
         }

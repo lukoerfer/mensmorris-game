@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MensMorris.Engine
 {
@@ -11,7 +8,7 @@ namespace MensMorris.Engine
         public int Ring { get; private set; }
         public int Number { get; private set; }
 
-        private BoardPosition[] neighbors;
+        private BoardPosition[] Neighbors;
 
         public Tile Current { get; private set; }
 
@@ -27,13 +24,13 @@ namespace MensMorris.Engine
         {
             this.Ring = ring;
             this.Number = number;
-            this.neighbors = new BoardPosition[4];
+            this.Neighbors = new BoardPosition[4];
             this.Current = null;
         }
 
         internal void SetNeighbor(Direction direction, BoardPosition position)
         {
-            this.neighbors[(int)direction] = position;
+            this.Neighbors[(int)direction] = position;
         }
 
         internal void SetCurrent(Tile tile)
@@ -43,12 +40,12 @@ namespace MensMorris.Engine
 
         public BoardPosition Neighbor(Direction direction)
         {
-            return this.neighbors[(int)direction];
+            return this.Neighbors[(int)direction];
         }
 
         public List<BoardPosition> GetNeighbors()
         {
-            return this.neighbors.Where(neighbor => neighbor != null).ToList();
+            return this.Neighbors.Where(neighbor => neighbor != null).ToList();
         }
 
         
