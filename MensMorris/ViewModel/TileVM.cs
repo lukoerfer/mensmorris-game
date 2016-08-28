@@ -8,6 +8,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using PropertyChanged;
 
 using MensMorris.Engine;
+using System.Collections.Generic;
 
 namespace MensMorris.Game.ViewModel
 {
@@ -28,13 +29,7 @@ namespace MensMorris.Game.ViewModel
 
         public ObservableCollection<TargetVM> RelatedTargets { get; set; }
 
-        public bool IsSelectable
-        {
-            get
-            {
-                return this.RelatedTargets.Count > 0;
-            }
-        }
+        public bool IsSelectable { get; set; }
 
         public bool IsSelected { get; set; }
 
@@ -46,9 +41,16 @@ namespace MensMorris.Game.ViewModel
             this.Model = model;
             this.Model.AtChanged += OnAtChanged;
             this.SlotNumber = this.Model.Owner.ID;
+            this.IsSelectable = false;
             this.RelatedTargets = new ObservableCollection<TargetVM>();
+            this.RelatedTargets.CollectionChanged += OnRelatedTargetsChanged;
             this.IsSelected = false;
             this.Select = new RelayCommand(() => this.SelectHandler());
+        }
+
+        private void OnRelatedTargetsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            this.IsSelectable = this.RelatedTargets.Count > 0;
         }
 
         private void OnAtChanged(object sender, EventArgs e)
@@ -59,10 +61,12 @@ namespace MensMorris.Game.ViewModel
 
         private void SelectHandler()
         {
-            if (!this.IsSelected && this.IsSelectable)
+            if (this.IsSelectable)
             {
-                this.Parent.SetSelectedTile(this.RelatedTargets.ToList());
-                this.IsSelected = true;
+                bool wasSelected = this.IsSelected;
+                this.Parent.SetSelectedTile(wasSelected 
+                    ? new List<TargetVM>() : this.RelatedTargets.ToList());
+                this.IsSelected = !wasSelected;
             }
         }
     }

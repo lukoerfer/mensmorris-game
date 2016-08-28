@@ -8,9 +8,11 @@ namespace MensMorris.Engine
         public int Ring { get; private set; }
         public int Number { get; private set; }
 
-        private BoardPosition[] Neighbors;
+        public Match Match { get; private set; }
 
-        public Tile Current { get; private set; }
+        protected Dictionary<Direction, BoardPosition> Neighbors;
+
+        public Tile Current { get; protected set; }
 
         public bool IsFree
         {
@@ -20,17 +22,18 @@ namespace MensMorris.Engine
             }
         }
 
-        public BoardPosition(int ring, int number)
+        public BoardPosition(Match match, int ring, int number)
         {
+            this.Match = match;
             this.Ring = ring;
             this.Number = number;
-            this.Neighbors = new BoardPosition[4];
+            this.Neighbors = new Dictionary<Direction, BoardPosition>();
             this.Current = null;
         }
 
         internal void SetNeighbor(Direction direction, BoardPosition position)
         {
-            this.Neighbors[(int)direction] = position;
+            this.Neighbors.Add(direction, position);
         }
 
         internal void SetCurrent(Tile tile)
@@ -40,14 +43,32 @@ namespace MensMorris.Engine
 
         public BoardPosition Neighbor(Direction direction)
         {
-            return this.Neighbors[(int)direction];
+            BoardPosition result;
+            return this.Neighbors.TryGetValue(direction, out result) ? result : null;
         }
 
         public List<BoardPosition> GetNeighbors()
         {
-            return this.Neighbors.Where(neighbor => neighbor != null).ToList();
+            return this.Neighbors.Values.ToList();
+        }
+    }
+
+    public class SimulatedBoardPosition : BoardPosition
+    {
+        public BoardPosition Original { get; private set; }
+
+        public SimulatedBoardPosition(BoardPosition orig) : base(orig.Match, orig.Ring, orig.Number)
+        {
+            this.Original = orig;
         }
 
-        
+        public void CopyNeighbors(Dictionary<BoardPosition, SimulatedBoardPosition> simulatedBoard)
+        {
+            foreach (Direction dir in DirectionHelpers.Enumerate())
+            {
+                BoardPosition originalNeighbor = this.Original.Neighbor(dir);
+                if (originalNeighbor != null) this.SetNeighbor(dir, simulatedBoard[originalNeighbor]);
+            }
+        }
     }
 }

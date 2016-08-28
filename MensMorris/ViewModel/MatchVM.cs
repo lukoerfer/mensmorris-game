@@ -9,7 +9,7 @@ namespace MensMorris.Game.ViewModel
 {
     public class MatchVM : IPlayer
     {
-        public event EventHandler MatchDone;
+        public event Action MatchDone;
 
         private Match Match;
 
@@ -21,10 +21,10 @@ namespace MensMorris.Game.ViewModel
 
         public ScreenMessageVM ScreenMessage { get; set; }
 
-        public MatchVM()
+        public MatchVM(SettingsVM settings, PlayerOptionVM first, PlayerOptionVM second)
         {
             // Create a new MensMorris match
-            this.Match = new Match(this, new RandomBot());
+            this.Match = new Match(settings.ExtractSettings(), this.ExtractPlayer(first), this.ExtractPlayer(second));
             this.Match.Finished += OnMatchFinished;
             // Init the slot view models
             this.FirstSlot = new SlotVM(this.Match.GetSlot(0));
@@ -40,6 +40,18 @@ namespace MensMorris.Game.ViewModel
             this.Match.Start();
         }
 
+        private IPlayer ExtractPlayer(PlayerOptionVM playerOption)
+        {
+            if (playerOption.PlayerType == null)
+            {
+                return this;
+            }
+            else
+            {
+                return (IPlayer)Activator.CreateInstance(playerOption.PlayerType);
+            }
+        }
+
         private void OnMatchFinished(object sender, EventArgs e)
         {
             this.ScreenMessage.Set("Game finished");
@@ -51,7 +63,6 @@ namespace MensMorris.Game.ViewModel
         }
 
         private AutoResetEvent ActionWaiter;
-
         private BaseAction ChosenAction;
 
         private void OnActionChosen(object sender, BaseAction chosenAction)

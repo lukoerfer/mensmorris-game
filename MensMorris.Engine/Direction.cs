@@ -6,22 +6,14 @@ namespace MensMorris.Engine
 {
     public enum Direction
     {
-        // Lower in number direction
         Down = 0,
-        Y_Minus = 0,
-        LowerNumber = 0,
-        // Higher in letter direction
-        Right = 1,
-        X_Plus = 1,
-        HigherLetter = 1,
-        // Higher in number direction
-        Up = 2,
-        Y_Plus = 2,
-        HigherNumber = 2,
-        // Lower in letter direction
-        Left = 3,
-        X_Minus = 3,
-        LowerLetter = 3
+        DownRight = 1,
+        Right = 2,
+        UpRight = 3,
+        Up = 4,
+        UpLeft = 5,
+        Left = 6,
+        DownLeft = 7
     }
 
     public static class DirectionHelpers
@@ -31,14 +23,19 @@ namespace MensMorris.Engine
             return Enum.GetValues(typeof(Direction)).Cast<Direction>();
         }
 
-        public static Direction Next(this Direction direction)
+        public static Direction ForSide(int sideNumber)
         {
-            return (Direction)(((int)direction + 1) % 4);
+            return (Direction)(sideNumber * 2);
+        }
+
+        public static Direction Turn(this Direction direction, int times45)
+        {
+            return (Direction)(((int)direction + times45) % 8);
         }
 
         public static Direction Opposite(this Direction direction)
         {
-            return (Direction)(((int)direction + 2) % 4);
+            return (Direction)(((int)direction + 4) % 8);
         }
     }
 }

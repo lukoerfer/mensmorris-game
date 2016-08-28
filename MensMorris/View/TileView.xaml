@@ -7,19 +7,25 @@
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:TileVM}">
         <Button Width="10" Height="10"
-                        Visibility="{Binding IsOnBoard, Converter={StaticResource boolToVisibility}, ConverterParameter='collapse'}"
-                        Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='10'}"
-                        Command="{Binding Select}">
+                Visibility="{Binding IsOnBoard, Converter={StaticResource boolToVisibility}, ConverterParameter='collapse'}"
+                Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='10'}"
+                Command="{Binding Select}">
             <Button.Template>
                 <ControlTemplate>
-                    <Ellipse
-                        Fill="{Binding SlotNumber, Converter={StaticResource slotToColor}}">
+                    <Ellipse>
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">
-                                <Setter Property="Opacity" Value="1" />
+                                <Setter Property="Fill" Value="{Binding SlotNumber, Converter={StaticResource slotToColor}}" />
                                 <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelectable}" Value="True">
+                                        <Setter Property="Fill" Value="{Binding SlotNumber, Converter={StaticResource slotToColor}, ConverterParameter='light'}" />
+                                    </DataTrigger>
                                     <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="Opacity" Value="0.5" />
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="Gray" />
+                                            </Setter.Value>
+                                        </Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

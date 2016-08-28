@@ -14,15 +14,39 @@ namespace MensMorris.Game.Helpers
             Brushes.Blue
         };
 
+        private String[] SlotColorNames = new String[]
+        {
+            "Red",
+            "Blue"
+        };
+
+        private SolidColorBrush[] LightSlotColors = new SolidColorBrush[]
+        {
+            Brushes.Tomato,
+            Brushes.RoyalBlue
+        };
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is int)
+            parameter = parameter ?? string.Empty;
+            if (value is int && parameter is string)
             {
-                return this.SlotColors[(int)value];
+                // Cast value and parameter
+                int intValue = (int)value;
+                string strParameter = (string)parameter;
+                // Check for parameters
+                if (strParameter.Equals("name"))
+                {
+                    return this.SlotColorNames[intValue];
+                }
+                if (strParameter.Equals("light")) {
+                    return this.LightSlotColors[intValue];
+                }
+                return this.SlotColors[intValue];
             }
             else
             {
-                throw new ArgumentException("Wrong value type. Must be int.");
+                throw new ArgumentException("Wrong value or parameter type");
             }
         }
 

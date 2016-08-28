@@ -6,23 +6,23 @@ namespace MensMorris.Game.ViewModel
 {
     public class PositionVM
     {
-        private BoardVM Parent;
+        private BoardVM Board;
 
         public BoardPosition Model { get; private set; }
 
         public Point Location { get; private set; }
 
-        public PositionVM(BoardVM parent, BoardPosition model)
+        public PositionVM(BoardVM board, BoardPosition model)
         {
-            this.Parent = parent;
+            this.Board = board;
             this.Model = model;
-            this.Location = PositionVM.CalculateLocation(this.Model.Ring, this.Model.Number);
+            this.Location = PositionVM.CalculateLocation(this.Model.Match.Settings.RingCount, this.Model.Ring, this.Model.Number);
         }
 
-        private static Point CalculateLocation(int ring, int number)
+        private static Point CalculateLocation(int ringCount, int ring, int number)
         {
             Point location = new Point(50, 50);
-            int radius = (4 - ring) * 15;
+            int radius = ring * (40 / ringCount);
             switch (number)
             {
                 case 0:

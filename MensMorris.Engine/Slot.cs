@@ -8,6 +8,8 @@ namespace MensMorris.Engine
     {
         public event EventHandler IsOnTurnChanged;
 
+        private Match Match;
+
         public int ID { get; private set; }
 
         public IPlayer Player { get; private set; }
@@ -34,12 +36,13 @@ namespace MensMorris.Engine
             }
         }
 
-        public Slot(IPlayer player, int id)
+        public Slot(Match match, IPlayer player, int id)
         {
+            this.Match = match;
             this.ID = id;
             this.Player = player;
             this.Tiles = new List<Tile>();
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < this.Match.Settings.TilesPerSlot; i++)
             {
                 this.Tiles.Add(new Tile(this));
             }
@@ -49,7 +52,7 @@ namespace MensMorris.Engine
         {
             // Determine the possible actions
             List<PlaceAction> possibleActions = match.GetEmptyPositions()
-                .Select(pos => new PlaceAction(this.GetUnusedTile(), pos))
+                .Select(pos => new PlaceAction(this, this.GetUnusedTile(), pos))
                 .ToList();
             // Let the player select one action
             PlaceAction chosenAction = this.Player.ChoosePlaceAction(possibleActions, match);
@@ -65,7 +68,7 @@ namespace MensMorris.Engine
             List<MoveAction> possibleActions = this.GetTilesOnBoard()
                 .Select(tile => 
                     (this.CanFly ? match.GetEmptyPositions() : tile.At.GetNeighbors().Where(other => other.IsFree))
-                    .Select(other => new MoveAction(tile, other)))
+                    .Select(other => new MoveAction(this, tile, other)))
                 .Aggregate((actions1, actions2) => actions1.Concat(actions2))
                 .ToList();
             if (possibleActions.Count() == 0)
@@ -89,7 +92,7 @@ namespace MensMorris.Engine
             // Determine the possible actions
             List<KickAction> possibleActions = (opponentTiles.Any(tile => !tile.FormsMill()) ?
                 opponentTiles.Where(tile => !tile.FormsMill()) : opponentTiles)
-                .Select(tile => new KickAction(tile))
+                .Select(tile => new KickAction(this, tile))
                 .ToList();
             // Let the player select one action
             KickAction chosenAction = this.Player.ChooseKickAction(possibleActions, match);
@@ -103,6 +106,11 @@ namespace MensMorris.Engine
         {
             this.IsOnTurn = isOnTurn;
             this.IsOnTurnChanged?.BeginInvoke(this, EventArgs.Empty, this.IsOnTurnChanged.EndInvoke, null);
+        }
+
+        public Slot GetOpponent()
+        {
+            return this.Match.GetSlot(this.ID == 0 ? 1 : 0);
         }
 
         public List<Tile> GetTiles()

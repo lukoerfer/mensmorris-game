@@ -9,6 +9,8 @@ namespace MensMorris.Engine
     {
         public event EventHandler Finished;
 
+        public Settings Settings { get; private set; }
+
         private List<BoardPosition> Board;
 
         private Slot[] Slots;
@@ -17,47 +19,73 @@ namespace MensMorris.Engine
 
         public TimeSpan WaitTime { get; set; }
 
-        public Match(IPlayer firstPlayer, IPlayer secondPlayer)
+        public Match(Settings settings, IPlayer firstPlayer, IPlayer secondPlayer)
         {
             // Set default round sleep time to one 1ms
             this.WaitTime = new TimeSpan(0, 0, 0, 0, 500);
+            // Set the game settings
+            this.Settings = settings;
             // Set initial phase
             this.Phase = GamePhase.PlacingPhase;
             // Create player slots
             this.Slots = new Slot[2];
-            this.Slots[0] = new Slot(firstPlayer, 0);
-            this.Slots[1] = new Slot(secondPlayer, 1);
+            this.Slots[0] = new Slot(this, firstPlayer, 0);
+            this.Slots[1] = new Slot(this, secondPlayer, 1);
             // Build the board
             this.Board = new List<BoardPosition>();
-            BoardPosition[] middle = new BoardPosition[4];
-            for (int ring = 1; ring <= 3; ring++) // For each ring
+            BoardPosition[] middles = new BoardPosition[4];
+            BoardPosition[] corners = new BoardPosition[4];
+            for (int ring = 1; ring <= this.Settings.RingCount; ring++) // For each ring
             {
-                Direction direction = Direction.Left;
+                Direction direction = DirectionHelpers.ForSide(0);
                 // Create and remember first position
-                BoardPosition first = new BoardPosition(ring, 0);
+                BoardPosition first = new BoardPosition(this, ring, 0);
+                // First position is a corner position
+                if (this.Settings.ConnectDiagonals)
+                {
+                    // Connect corner positions
+                    if (corners[0] != null)
+                    {
+                        corners[0].SetNeighbor(direction.Turn(5 /* 225° */), first);
+                        first.SetNeighbor(direction.Turn(5 /* 225° */).Opposite(), corners[0]);
+                    }
+                    // Remember middle position
+                    corners[0] = first;
+                }
                 this.Board.Add(first);
                 // Remember previous position
                 BoardPosition previous = first;
-                for (int a = 0; a <= 3; a++) // For each side
+                for (int sideNumber = 0; sideNumber <= 3; sideNumber++) // For each side
                 {
-                    direction = (Direction)a;
-                    for (int b = 1; b <= (a < 3 ? 2 : 1); b++) // For each position
+                    direction = DirectionHelpers.ForSide(sideNumber);
+                    for (int positionNumber = 1; positionNumber <= (sideNumber < 3 ? 2 : 1); positionNumber++) // For each position
                     {
                         // Create a new position
-                        BoardPosition position = new BoardPosition(ring, a * 2 + b);
+                        BoardPosition position = new BoardPosition(this, ring, sideNumber * 2 + positionNumber);
                         // Set neighbors
                         previous.SetNeighbor(direction, position);
                         position.SetNeighbor(direction.Opposite(), previous);
-                        if (b == 1)
+                        if (positionNumber == 1) // Middle position
                         {
                             // Connect middle positions
-                            if (middle[a] != null)
+                            if (middles[sideNumber] != null)
                             {
-                                middle[a].SetNeighbor(direction.Next(), position);
-                                position.SetNeighbor(direction.Next().Opposite(), middle[a]);
+                                middles[sideNumber].SetNeighbor(direction.Turn(6 /* 270° */), position);
+                                position.SetNeighbor(direction.Turn(6 /* 270° */).Opposite(), middles[sideNumber]);
                             }
                             // Remember middle position
-                            middle[a] = position;
+                            middles[sideNumber] = position;
+                        }
+                        if (this.Settings.ConnectDiagonals && positionNumber == 2) // Corner position
+                        {
+                            // Connect corner positions
+                            if (corners[sideNumber + 1] != null)
+                            {
+                                corners[sideNumber + 1].SetNeighbor(direction.Turn(7 /* 315° */), position);
+                                position.SetNeighbor(direction.Turn(7 /* 315° */).Opposite(), corners[sideNumber + 1]);
+                            }
+                            // Remember corner position
+                            corners[sideNumber + 1] = position;
                         }
                         // Add position to board
                         this.Board.Add(position);
@@ -84,14 +112,12 @@ namespace MensMorris.Engine
 
         private void GameLoop()
         {
-            int currentSlotId = 0;
-            Slot currentSlot = null;
+            // Start with first slot
+            Slot currentSlot = this.GetSlot(0);
             Tile usedTile = null;
             int placingCounter = 1;
             while (!this.IsGameDone() && !this.shouldStop)
             {
-                // Assign the current slot
-                currentSlot = this.Slots[currentSlotId];
                 // Set OnTurn state for current slot
                 currentSlot.SetOnTurn(true);
                 // Wait the configured timespan
@@ -103,7 +129,7 @@ namespace MensMorris.Engine
                         PlaceAction place = currentSlot.DoPlaceAction(this);
                         usedTile = (place != null) ? place.ToPlace : null;
                         // Check for phase transition
-                        if (placingCounter++ == 18) this.Phase = GamePhase.MovingPhase;
+                        if (placingCounter++ == this.Settings.TilesPerSlot * 2) this.Phase = GamePhase.MovingPhase;
                         break;
                     case GamePhase.MovingPhase:
                         // Perform the move action
@@ -124,8 +150,8 @@ namespace MensMorris.Engine
                 }
                 // Reset OnTurn state for current slot
                 currentSlot.SetOnTurn(false);
-                // Switch the player to either first or second player
-                currentSlotId = (currentSlotId == 0) ? 1 : 0;
+                // Switch the current slot
+                currentSlot = currentSlot.GetOpponent();
             }
             // Inform about the finished game
             this.Finished?.BeginInvoke(this, EventArgs.Empty, this.Finished.EndInvoke, null);
@@ -136,9 +162,32 @@ namespace MensMorris.Engine
             return this.Board.ToList();
         }
 
-        public Match SimulateAction(BaseAction action)
+        public List<SimulatedBoardPosition> SimulateAction(BaseAction action)
         {
-            return this;
+            // Copy the current match state to a simulated match state
+            Dictionary<BoardPosition, SimulatedBoardPosition> simulatedBoard = 
+                this.Board.ToDictionary(pos => pos, pos => new SimulatedBoardPosition(pos));
+            Dictionary<Tile, SimulatedTile> simulatedTiles =
+                this.GetTiles().ToDictionary(tile => tile, tile => new SimulatedTile(tile));
+            simulatedBoard.Values.ToList().ForEach(simPos => simPos.CopyNeighbors(simulatedBoard));
+            simulatedTiles.Values.ToList().ForEach(simTile => simTile.CopyAt(simulatedBoard));
+            // Apply the desired action
+            if (action is PlaceAction)
+            {
+                PlaceAction placeAction = action as PlaceAction;
+                simulatedTiles[placeAction.ToPlace].GoTo(simulatedBoard[placeAction.Target]);
+            }
+            if (action is MoveAction)
+            {
+                MoveAction moveAction = action as MoveAction;
+                simulatedTiles[moveAction.ToMove].GoTo(simulatedBoard[moveAction.Target]);
+            }
+            if (action is KickAction)
+            {
+                KickAction kickAction = action as KickAction;
+                simulatedTiles[kickAction.ToKick].GoTo(null);
+            }
+            return simulatedBoard.Values.ToList();
         }
 
         public List<Slot> GetSlots()

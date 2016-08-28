@@ -11,7 +11,8 @@ namespace MensMorris.Game
         {
             return new Type[]
             {
-                typeof(RandomBot)
+                typeof(RandomBot),
+                typeof(HeuristicBot)
             }.ToList();
         }
     }

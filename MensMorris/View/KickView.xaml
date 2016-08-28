@@ -6,13 +6,13 @@
         <ResourceDictionary Source="Converter.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:KickVM}">
-        <Button Height="15" Width="15"
-                Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='15'}"
+        <Button Height="12" Width="12"
+                Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='12'}"
                 Command="{Binding Choose}">
             <Button.Template>
                 <ControlTemplate>
                     <Polygon Points="0,20 20,0 50,30 80,0 100,20 70,50 100,80 80,100 50,70 20,100 0,80 30,50 0,20" 
-                             Fill="Red" Opacity="0.8" Stretch="Fill" />
+                             Fill="{Binding SlotNumber, Converter={StaticResource slotToColor}}" Opacity="0.5" Stretch="Fill" />
                 </ControlTemplate>
             </Button.Template>
         </Button>

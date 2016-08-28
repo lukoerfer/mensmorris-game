@@ -14,6 +14,8 @@ namespace MensMorris.Game.ViewModel
 
         public Point Location { get; set; }
 
+        public int SlotNumber { get; set; }
+
         public ICommand Choose { get; set; }
 
         public TargetVM(BaseAction action, BoardVM parent, PositionVM position)
@@ -21,6 +23,7 @@ namespace MensMorris.Game.ViewModel
             this.Action = action;
             this.Parent = parent;
             this.Location = position.Location;
+            this.SlotNumber = this.Action.Executing.ID;
             this.Choose = new RelayCommand(() => this.Parent.ChooseAction(this.Action));
         }
     }

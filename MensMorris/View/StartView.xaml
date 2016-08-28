@@ -1,20 +1,67 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:local="clr-namespace:MensMorris.Game.View"
+                    xmlns:extwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:vm="clr-namespace:MensMorris.Game.ViewModel">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Converter.xaml" />
+    </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:StartVM}">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
-            <Label>Player selection</Label>
-            <StackPanel Orientation="Horizontal">
-                <ComboBox ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding FirstPlayer}"
-                          SelectedIndex="0">
-                </ComboBox>
-                <ComboBox ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding SecondPlayer}"
-                          SelectedIndex="0">
-                </ComboBox>
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
+            <Grid.Resources>
+                <sys:Int32 x:Key="FullSpan">
+                    <!-- Int32 MaxValue-->
+                    2147483647
+                </sys:Int32>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="0 20"
+                       HorizontalAlignment="Center">
+                <TextBlock.Inlines>
+                    <Run FontSize="50" FontWeight="Bold" Foreground="Red" Text="Mens " />
+                    <Run FontSize="50" FontWeight="Bold" Foreground="Blue" Text="Morris" />
+                </TextBlock.Inlines>
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="5"
+                       Text="Player selection" FontSize="22" TextDecorations="Underline" />
+            <ComboBox Grid.Row="2" SelectedIndex="0" Margin="3" FontSize="18" Foreground="Red"
+                      ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding FirstPlayer}" />
+            <TextBlock Grid.Row="2" Grid.Column="1" Margin="2" Text="vs." FontSize="18" VerticalAlignment="Center" />
+            <ComboBox Grid.Row="2" Grid.Column="2" SelectedIndex="0" Margin="3" FontSize="18" Foreground="Blue"
+                      ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding SecondPlayer}" />
+            <TextBlock Grid.Row="3" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="5"
+                       Text="Game settings" FontSize="22" TextDecorations="Underline"/>
+            <ComboBox Grid.Row="4" Grid.ColumnSpan="{StaticResource FullSpan}" SelectedIndex="0" Margin="3" FontSize="18"
+                      ItemsSource="{Binding SettingsOptions}" SelectedValue="{Binding Settings}" />
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="3"
+                        DataContext="{Binding Settings}" IsEnabled="{Binding IsFixed, Converter={StaticResource boolNegate}}">
+                <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock FontSize="14" Text="Ring count:" VerticalAlignment="Center" Margin="0 0 5 0"  />
+                    <extwpf:IntegerUpDown Minimum="1" Maximum="3" FontSize="14" VerticalAlignment="Center" Value="{Binding RingCount}" Width="50" />
+                </StackPanel>
+                <CheckBox Margin="5" FontSize="14" Content="Connect diagonals" IsChecked="{Binding ConnectDiagonals}" 
+                          HorizontalAlignment="Center" VerticalContentAlignment="Center" />
+                <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock FontSize="14" Text="Tiles per player:" VerticalAlignment="Center" Margin="0 0 5 0" />
+                    <extwpf:IntegerUpDown Minimum="3" Maximum="{Binding MaxTilesPerSlot}" FontSize="14" VerticalAlignment="Center" Value="{Binding TilesPerSlot}" Width="50" />
+                </StackPanel>
             </StackPanel>
-            <Label>Rules</Label>
-            <Button Command="{Binding StartMatch}">Start Match</Button>
-        </StackPanel>
+            <Button Grid.Row="6" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="0 10 0 0" Padding="10 2" FontSize="18" HorizontalAlignment="Center"
+                    HorizontalContentAlignment="Center" Command="{Binding StartMatch}" Content="Start Match" />
+        </Grid>
     </DataTemplate>
 </ResourceDictionary>

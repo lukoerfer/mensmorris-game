@@ -17,27 +17,20 @@ namespace MensMorris.Game.ViewModel
 
         private void SetStart()
         {
-            StartVM startVM = new StartVM();
-            startVM.StartDone += OnStartDone;
-            this.CurrentModel = startVM;
+            MatchVM oldVM = this.CurrentModel as MatchVM;
+            if (oldVM != null) oldVM.MatchDone -= this.SetStart;
+            StartVM newVM = new StartVM();
+            newVM.StartDone += this.SetMatch;
+            this.CurrentModel = newVM;
         }
 
-        private void OnStartDone(object sender, EventArgs e)
+        private void SetMatch(SettingsVM settings, PlayerOptionVM first, PlayerOptionVM second)
         {
-            (this.CurrentModel as StartVM).StartDone -= OnStartDone;
-            this.SetMatch();
-        }
-
-        private void SetMatch()
-        {
-            MatchVM matchVM = new MatchVM();
-            matchVM.MatchDone += OnMatchDone;
-            this.CurrentModel = matchVM;
-        }
-
-        private void OnMatchDone(object sender, EventArgs args)
-        {
-            
+            StartVM oldVM = this.CurrentModel as StartVM;
+            if (oldVM != null) oldVM.StartDone -= this.SetMatch;
+            MatchVM newVM = new MatchVM(settings, first, second);
+            newVM.MatchDone += this.SetStart;
+            this.CurrentModel = newVM;
         }
     }
 }

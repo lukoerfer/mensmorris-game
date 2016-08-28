@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MensMorris.Engine
@@ -9,7 +10,7 @@ namespace MensMorris.Engine
 
         public Slot Owner { get; private set; }
 
-        public BoardPosition At { get; private set; }
+        public BoardPosition At { get; protected set; }
 
         public Tile(Slot owner)
         {
@@ -38,6 +39,22 @@ namespace MensMorris.Engine
             {
                 return false;
             }
+        }
+    }
+
+    public class SimulatedTile : Tile
+    {
+        public Tile Original { get; private set; }
+
+        public SimulatedTile(Tile orig) : base(orig.Owner)
+        {
+            this.Original = orig;
+        }
+
+        public void CopyAt(Dictionary<BoardPosition, SimulatedBoardPosition> simulatedBoard)
+        {
+            if (this.Original.At != null) this.GoTo(simulatedBoard[this.Original.At]);
+
         }
     }
 }

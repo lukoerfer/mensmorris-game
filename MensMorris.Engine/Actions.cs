@@ -3,6 +3,11 @@
     public abstract class BaseAction
     {
         public Slot Executing { get; private set; }
+
+        public BaseAction(Slot executing)
+        {
+            this.Executing = executing;
+        }
     }
 
     public class PlaceAction : BaseAction
@@ -11,7 +16,7 @@
 
         public BoardPosition Target { get; private set; }
 
-        internal PlaceAction(Tile toPlace, BoardPosition target)
+        internal PlaceAction(Slot executing, Tile toPlace, BoardPosition target) : base(executing)
         {
             this.ToPlace = toPlace;
             this.Target = target;
@@ -24,7 +29,7 @@
 
         public BoardPosition Target { get; private set; }
 
-        internal MoveAction(Tile toMove, BoardPosition target)
+        internal MoveAction(Slot executing, Tile toMove, BoardPosition target) : base(executing)
         {
             this.ToMove = toMove;
             this.Target = target;
@@ -35,7 +40,7 @@
     {
         public Tile ToKick { get; private set; }
 
-        internal KickAction(Tile toKick)
+        internal KickAction(Slot executing, Tile toKick) : base(executing)
         {
             this.ToKick = toKick;
         }
