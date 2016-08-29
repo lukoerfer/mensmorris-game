@@ -19,9 +19,11 @@ namespace MensMorris.Game.ViewModel
 
         public int RingCount { get; set; }
 
-        public bool HasCenter { get; set; }
+        public bool CenterPoint { get; set; }
 
-        public bool ConnectDiagonals { get; set; }
+        public bool CenterCross { get; set; }
+
+        public bool ConnectCorners { get; set; }
 
         public int TilesPerSlot { get; set; }
 
@@ -41,8 +43,9 @@ namespace MensMorris.Game.ViewModel
             this.IsFixed = isFixed;
             // Extract the single rules
             this.RingCount = settings.RingCount;
-            this.HasCenter = settings.HasCenter;
-            this.ConnectDiagonals = settings.ConnectDiagonals;
+            this.CenterPoint = settings.CenterPoint;
+            this.CenterCross = settings.CenterCross;
+            this.ConnectCorners = settings.ConnectCorners;
             this.TilesPerSlot = settings.TilesPerSlot;
         }
 
@@ -52,7 +55,7 @@ namespace MensMorris.Game.ViewModel
         /// <returns></returns>
         public Settings ExtractSettings()
         {
-            return new Settings(this.RingCount, this.HasCenter, this.ConnectDiagonals, this.TilesPerSlot);
+            return new Settings(this.RingCount, this.CenterPoint, this.CenterCross, this.ConnectCorners, this.TilesPerSlot);
         }
 
         /// <summary>

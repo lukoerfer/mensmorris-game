@@ -35,13 +35,23 @@ namespace MensMorris.Engine
             this.Board = new List<BoardPosition>();
             BoardPosition[] middles = new BoardPosition[4];
             BoardPosition[] corners = new BoardPosition[4];
+            if (this.Settings.CenterPoint)
+            {
+                BoardPosition center = new BoardPosition(this, 0, 0);
+                for (int i = 0; i <= 3; i++)
+                {
+                    middles[i] = center;
+                    corners[i] = center;
+                }
+                this.Board.Add(center);
+            }
             for (int ring = 1; ring <= this.Settings.RingCount; ring++) // For each ring
             {
                 Direction direction = DirectionHelpers.ForSide(0);
                 // Create and remember first position
                 BoardPosition first = new BoardPosition(this, ring, 0);
                 // First position is a corner position
-                if (this.Settings.ConnectDiagonals)
+                if (this.Settings.ConnectCorners)
                 {
                     // Connect corner positions
                     if (corners[0] != null)
@@ -75,8 +85,13 @@ namespace MensMorris.Engine
                             }
                             // Remember middle position
                             middles[sideNumber] = position;
+                            // Prepare center cross if activated
+                            if (this.Settings.CenterCross && ring == 1 && sideNumber <= 1)
+                            {
+                                middles[sideNumber + 2] = position;
+                            }
                         }
-                        if (this.Settings.ConnectDiagonals && positionNumber == 2) // Corner position
+                        if (this.Settings.ConnectCorners && positionNumber == 2) // Corner position
                         {
                             // Connect corner positions
                             if (corners[sideNumber + 1] != null)
@@ -114,6 +129,7 @@ namespace MensMorris.Engine
         {
             // Start with first slot
             Slot currentSlot = this.GetSlot(0);
+            // Required for kick condition check
             Tile usedTile = null;
             int placingCounter = 1;
             while (!this.IsGameDone() && !this.shouldStop)
@@ -125,23 +141,37 @@ namespace MensMorris.Engine
                 switch (this.Phase)
                 {
                     case GamePhase.PlacingPhase:
-                        // Perform the place action
-                        PlaceAction place = currentSlot.DoPlaceAction(this);
-                        usedTile = (place != null) ? place.ToPlace : null;
+                        // Collect possible actions and let the player select one
+                        PlaceAction placeAction = currentSlot.HandlePlaceAction(this);
+                        // Revert any simulation
+                        this.Revert();
+                        // Execute the action
+                        placeAction.Tile.To(placeAction.Target);
+                        // Remember the used tile for kick condition
+                        usedTile = placeAction.Tile;
                         // Check for phase transition
                         if (placingCounter++ == this.Settings.TilesPerSlot * 2) this.Phase = GamePhase.MovingPhase;
                         break;
                     case GamePhase.MovingPhase:
-                        // Perform the move action
-                        MoveAction move = currentSlot.DoMoveAction(this);
-                        usedTile = (move != null) ? move.ToMove : null;
+                        // Collect possible actions and let the player select one
+                        MoveAction moveAction = currentSlot.HandleMoveAction(this);
+                        // Revert any simulation
+                        this.Revert();
+                        // Execute the action
+                        moveAction.Tile.To(moveAction.Target);
+                        usedTile = (moveAction != null) ? moveAction.Tile : null;
                         break;
                 }
                 if (usedTile != null)
                 {
                     if (usedTile.FormsMill())
                     {
-                        KickAction kick = currentSlot.DoKickAction(this);
+                        // Collect possible actions and let the player select one
+                        KickAction kickAction = currentSlot.HandleKickAction(this);
+                        // Revert any simulation
+                        this.Revert();
+                        // Execute the action
+                        kickAction.OpponentTile.To(null);
                     }
                 }
                 else
@@ -159,35 +189,34 @@ namespace MensMorris.Engine
 
         public List<BoardPosition> GetBoard()
         {
+            // Copy list to prevent manipulation
             return this.Board.ToList();
         }
 
-        public List<SimulatedBoardPosition> SimulateAction(BaseAction action)
+        public MatchRevert SimulateAction(BaseAction action)
         {
-            // Copy the current match state to a simulated match state
-            Dictionary<BoardPosition, SimulatedBoardPosition> simulatedBoard = 
-                this.Board.ToDictionary(pos => pos, pos => new SimulatedBoardPosition(pos));
-            Dictionary<Tile, SimulatedTile> simulatedTiles =
-                this.GetTiles().ToDictionary(tile => tile, tile => new SimulatedTile(tile));
-            simulatedBoard.Values.ToList().ForEach(simPos => simPos.CopyNeighbors(simulatedBoard));
-            simulatedTiles.Values.ToList().ForEach(simTile => simTile.CopyAt(simulatedBoard));
-            // Apply the desired action
             if (action is PlaceAction)
             {
                 PlaceAction placeAction = action as PlaceAction;
-                simulatedTiles[placeAction.ToPlace].GoTo(simulatedBoard[placeAction.Target]);
+                placeAction.Tile.SimulateTo(placeAction.Target);
             }
             if (action is MoveAction)
             {
                 MoveAction moveAction = action as MoveAction;
-                simulatedTiles[moveAction.ToMove].GoTo(simulatedBoard[moveAction.Target]);
+                moveAction.Tile.SimulateTo(moveAction.Target);
             }
             if (action is KickAction)
             {
                 KickAction kickAction = action as KickAction;
-                simulatedTiles[kickAction.ToKick].GoTo(null);
+                kickAction.OpponentTile.SimulateTo(null);
             }
-            return simulatedBoard.Values.ToList();
+            return new MatchRevert(this);
+        }
+
+        public void Revert()
+        {
+            this.Board.ForEach(position => position.Revert());
+            this.GetTiles().ForEach(tile => tile.Revert());
         }
 
         public List<Slot> GetSlots()
@@ -225,5 +254,20 @@ namespace MensMorris.Engine
             return this.IsGameDone() ? this.Slots.Single(slot => !slot.HasLost) : null;
         }
 
+    }
+
+    public class MatchRevert : IDisposable
+    {
+        private Match SimulatedMatch;
+
+        public MatchRevert(Match simulatedMatch)
+        {
+            this.SimulatedMatch = simulatedMatch;
+        }
+
+        public void Dispose()
+        {
+            this.SimulatedMatch.Revert();
+        }
     }
 }

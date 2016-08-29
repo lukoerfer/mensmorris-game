@@ -48,7 +48,7 @@ namespace MensMorris.Engine
             }
         }
 
-        internal PlaceAction DoPlaceAction(Match match)
+        internal PlaceAction HandlePlaceAction(Match match)
         {
             // Determine the possible actions
             List<PlaceAction> possibleActions = match.GetEmptyPositions()
@@ -56,13 +56,12 @@ namespace MensMorris.Engine
                 .ToList();
             // Let the player select one action
             PlaceAction chosenAction = this.Player.ChoosePlaceAction(possibleActions, match);
+            // Return action if it is possible
             if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action");
-            // Execute the selected action
-            chosenAction.ToPlace.GoTo(chosenAction.Target);
             return chosenAction;
         }
 
-        internal MoveAction DoMoveAction(Match match)
+        internal MoveAction HandleMoveAction(Match match)
         {
             // Determine the possible actions
             List<MoveAction> possibleActions = this.GetTilesOnBoard()
@@ -79,26 +78,27 @@ namespace MensMorris.Engine
             {
                 // Let the player select one action
                 MoveAction chosenAction = this.Player.ChooseMoveAction(possibleActions, match);
+                // Return action if it is possible
                 if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action!");
-                // Execute the selected action
-                chosenAction.ToMove.GoTo(chosenAction.Target);
                 return chosenAction;
             }
         }
 
-        internal KickAction DoKickAction(Match match)
+        internal KickAction HandleKickAction(Match match)
         {
+            // Determine the tiles of the opponent slot on the board
             IEnumerable<Tile> opponentTiles = match.GetSlot((this.ID == 0) ? 1 : 0).GetTilesOnBoard();
-            // Determine the possible actions
-            List<KickAction> possibleActions = (opponentTiles.Any(tile => !tile.FormsMill()) ?
+            // Determine the possible kick actions
+            List<KickAction> possibleActions = (
+                // Tiles from mills are only allowed if there are no other tiles
+                opponentTiles.Any(tile => !tile.FormsMill()) ?
                 opponentTiles.Where(tile => !tile.FormsMill()) : opponentTiles)
                 .Select(tile => new KickAction(this, tile))
                 .ToList();
             // Let the player select one action
             KickAction chosenAction = this.Player.ChooseKickAction(possibleActions, match);
+            // Return action if it is possible
             if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action");
-            // Execute the selected action
-            chosenAction.ToKick.GoTo(null);
             return chosenAction;
         }
 
@@ -133,6 +133,5 @@ namespace MensMorris.Engine
         {
             return (pos != null && pos.Current != null && pos.Current.Owner == this);
         }
-
     }
 }

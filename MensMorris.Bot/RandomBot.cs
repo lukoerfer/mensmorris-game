@@ -8,16 +8,16 @@ namespace MensMorris.Bot
 {
     public class RandomBot : IPlayer
     {
+        // Use common random number generator for all random bots
         private static Random Generator;
 
+        /// <summary>
+        /// Static constructor
+        /// </summary>
         static RandomBot()
         {
+            // Init the random number generator
             RandomBot.Generator = new Random();
-        }
-
-        public RandomBot()
-        {
-
         }
 
         public string GetName()
@@ -25,21 +25,22 @@ namespace MensMorris.Bot
             return "Random Bot";
         }
 
-        public KickAction ChooseKickAction(List<KickAction> possibleActions, Match match)
+        public PlaceAction ChoosePlaceAction(List<PlaceAction> possibleActions, Match match)
         {
-            return possibleActions
-                .Skip(RandomBot.Generator.Next(possibleActions.Count)) // Skip a random amount of moves
-                .First();
+            return this.ChooseAction(possibleActions.Cast<BaseAction>().ToList(), match) as PlaceAction;
         }
 
         public MoveAction ChooseMoveAction(List<MoveAction> possibleActions, Match match)
         {
-            return possibleActions
-                .Skip(RandomBot.Generator.Next(possibleActions.Count)) // Skip a random amount of moves
-                .First();
+            return this.ChooseAction(possibleActions.Cast<BaseAction>().ToList(), match) as MoveAction;
         }
 
-        public PlaceAction ChoosePlaceAction(List<PlaceAction> possibleActions, Match match)
+        public KickAction ChooseKickAction(List<KickAction> possibleActions, Match match)
+        {
+            return this.ChooseAction(possibleActions.Cast<BaseAction>().ToList(), match) as KickAction;
+        }
+
+        private BaseAction ChooseAction(List<BaseAction> possibleActions, Match match)
         {
             return possibleActions
                 .Skip(RandomBot.Generator.Next(possibleActions.Count)) // Skip a random amount of moves

@@ -10,17 +10,20 @@ namespace MensMorris.Engine
     {
         public int RingCount { get; set; }
 
-        public bool HasCenter { get; set; }
+        public bool CenterPoint { get; set; }
 
-        public bool ConnectDiagonals { get; set; }
+        public bool CenterCross { get; set; }
+
+        public bool ConnectCorners { get; set; }
 
         public int TilesPerSlot { get; set; }
 
-        public Settings(int rings, bool hasCenter, bool diagonals, int tiles)
+        public Settings(int rings, bool centerPoint, bool centerCross, bool diagonals, int tiles)
         {
             this.RingCount = rings;
-            this.HasCenter = hasCenter;
-            this.ConnectDiagonals = diagonals;
+            this.CenterPoint = centerPoint;
+            this.CenterCross = centerCross;
+            this.ConnectCorners = diagonals;
             this.TilesPerSlot = tiles;
         }
 

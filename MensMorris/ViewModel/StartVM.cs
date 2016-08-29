@@ -42,7 +42,7 @@ namespace MensMorris.Game.ViewModel
             // Add fixed game settings to the options
             this.SettingsOptions.AddRange(PredefinedGames.GetGames().Select(game => new SettingsVM(game.Key, true, game.Value)));
             // Add a free settings option
-            this.SettingsOptions.Add(new SettingsVM("- Free choice -", false, new Settings(3, false, false, 9)));
+            this.SettingsOptions.Add(new SettingsVM("- Free choice -", false, new Settings(3, false, false, false, 9)));
             // Init start match button
             this.StartMatch = new RelayCommand(() => this.OnStartMatch());
         }

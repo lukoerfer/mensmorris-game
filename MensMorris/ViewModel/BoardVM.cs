@@ -86,12 +86,12 @@ namespace MensMorris.Game.ViewModel
 
         public void SetMoveActions(List<MoveAction> actions)
         {
-            actions.ForEach(action => this.GetTile(action.ToMove).RelatedTargets.Add(new TargetVM(action, this, this.GetPosition(action.Target))));
+            actions.ForEach(action => this.GetTile(action.Tile).RelatedTargets.Add(new TargetVM(action, this, this.GetPosition(action.Target))));
         }
 
         public void SetKickActions(List<KickAction> actions)
         {
-            this.Kicks = actions.Select(action => new KickVM(action, this, this.GetTile(action.ToKick))).ToList();
+            this.Kicks = actions.Select(action => new KickVM(action, this, this.GetTile(action.OpponentTile))).ToList();
         }
 
         public void ChooseAction(BaseAction action)

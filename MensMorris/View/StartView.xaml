@@ -29,7 +29,7 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="0 20"
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="0 0 0 20"
                        HorizontalAlignment="Center">
                 <TextBlock.Inlines>
                     <Run FontSize="50" FontWeight="Bold" Foreground="Red" Text="Mens " />
@@ -53,7 +53,11 @@
                     <TextBlock FontSize="14" Text="Ring count:" VerticalAlignment="Center" Margin="0 0 5 0"  />
                     <extwpf:IntegerUpDown Minimum="1" Maximum="3" FontSize="14" VerticalAlignment="Center" Value="{Binding RingCount}" Width="50" />
                 </StackPanel>
-                <CheckBox Margin="5" FontSize="14" Content="Connect diagonals" IsChecked="{Binding ConnectDiagonals}" 
+                <CheckBox Margin="5" FontSize="14" Content="Center point" IsChecked="{Binding CenterPoint}" IsEnabled="{Binding CenterCross, Converter={StaticResource boolNegate}}"
+                          HorizontalAlignment="Center" VerticalContentAlignment="Center" />
+                <CheckBox Margin="5" FontSize="14" Content="Center cross" IsChecked="{Binding CenterCross}" IsEnabled="{Binding CenterPoint, Converter={StaticResource boolNegate}}"
+                          HorizontalAlignment="Center" VerticalContentAlignment="Center" />
+                <CheckBox Margin="5" FontSize="14" Content="Connect diagonals" IsChecked="{Binding ConnectCorners}" 
                           HorizontalAlignment="Center" VerticalContentAlignment="Center" />
                 <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock FontSize="14" Text="Tiles per player:" VerticalAlignment="Center" Margin="0 0 5 0" />

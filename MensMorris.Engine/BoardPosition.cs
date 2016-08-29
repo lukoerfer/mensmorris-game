@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MensMorris.Engine
@@ -36,7 +37,7 @@ namespace MensMorris.Engine
             this.Neighbors.Add(direction, position);
         }
 
-        internal void SetCurrent(Tile tile)
+        internal void Put(Tile tile)
         {
             this.Current = tile;
         }
@@ -51,24 +52,45 @@ namespace MensMorris.Engine
         {
             return this.Neighbors.Values.ToList();
         }
-    }
 
-    public class SimulatedBoardPosition : BoardPosition
-    {
-        public BoardPosition Original { get; private set; }
+        #region | Simulation |
 
-        public SimulatedBoardPosition(BoardPosition orig) : base(orig.Match, orig.Ring, orig.Number)
+        private BoardPositionSnapshot Snapshot;
+
+        public bool IsSimulated
         {
-            this.Original = orig;
-        }
-
-        public void CopyNeighbors(Dictionary<BoardPosition, SimulatedBoardPosition> simulatedBoard)
-        {
-            foreach (Direction dir in DirectionHelpers.Enumerate())
+            get
             {
-                BoardPosition originalNeighbor = this.Original.Neighbor(dir);
-                if (originalNeighbor != null) this.SetNeighbor(dir, simulatedBoard[originalNeighbor]);
+                return this.Snapshot != null;
             }
         }
+
+        internal void SimulatePut(Tile simulatedTile)
+        {
+            if (this.Snapshot == null) this.Snapshot = new BoardPositionSnapshot(this.Current);
+            this.Current = simulatedTile;
+        }
+
+        internal void Revert()
+        {
+            if (this.Snapshot != null)
+            {
+                this.Current = this.Snapshot.OriginalCurrent;
+                this.Snapshot = null;
+            }
+        }
+
+        #endregion // Simulation
     }
+
+    public class BoardPositionSnapshot
+    {
+        public Tile OriginalCurrent { get; private set; }
+
+        public BoardPositionSnapshot(Tile original)
+        {
+            this.OriginalCurrent = original;
+        }
+    }
+
 }

@@ -18,13 +18,13 @@ namespace MensMorris.Engine
             this.At = null;
         }
 
-        internal void GoTo(BoardPosition pos)
+        internal void To(BoardPosition target)
         {
             // Reset the previous board position
-            if (this.At != null) this.At.SetCurrent(null);
-            this.At = pos;
+            if (this.At != null) this.At.Put(null);
+            this.At = target;
             // Set the new board position
-            if (this.At != null) this.At.SetCurrent(this);
+            if (this.At != null) this.At.Put(this);
             this.AtChanged?.BeginInvoke(this, EventArgs.Empty, this.AtChanged.EndInvoke, null);
         }
 
@@ -40,21 +40,46 @@ namespace MensMorris.Engine
                 return false;
             }
         }
-    }
 
-    public class SimulatedTile : Tile
-    {
-        public Tile Original { get; private set; }
+        #region | Simulation |
 
-        public SimulatedTile(Tile orig) : base(orig.Owner)
+        private TileSnapshot Snapshot;
+
+        public bool IsSimulated
         {
-            this.Original = orig;
+            get
+            {
+                return this.Snapshot != null;
+            }
         }
 
-        public void CopyAt(Dictionary<BoardPosition, SimulatedBoardPosition> simulatedBoard)
+        internal void SimulateTo(BoardPosition simulatedTarget)
         {
-            if (this.Original.At != null) this.GoTo(simulatedBoard[this.Original.At]);
+            if (this.At != null) this.At.SimulatePut(null);
+            if (this.Snapshot == null) this.Snapshot = new TileSnapshot(this.At);
+            this.At = simulatedTarget;
+            if (this.At != null) this.At.SimulatePut(this);
+        }
 
+        internal void Revert()
+        {
+            if (this.Snapshot != null)
+            {
+                this.At = this.Snapshot.OriginalAt;
+                this.Snapshot = null;
+            }
+        }
+
+        #endregion // Simulation
+    }
+
+    public class TileSnapshot
+    {
+        public BoardPosition OriginalAt { get; private set; }
+
+        public TileSnapshot(BoardPosition original)
+        {
+            this.OriginalAt = original;
         }
     }
 }
