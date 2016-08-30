@@ -5,6 +5,7 @@
         <ResourceDictionary Source="Converter.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:ConnectionVM}">
+        <!-- Draw a line for a connection-->
         <Line X1="{Binding FirstPosition.Location.X}"
               Y1="{Binding FirstPosition.Location.Y}"
               X2="{Binding SecondPosition.Location.X}"

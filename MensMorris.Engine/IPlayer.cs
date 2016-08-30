@@ -2,6 +2,9 @@
 
 namespace MensMorris.Engine
 {
+    /// <summary>
+    /// Defines an interface for Mens Morris players
+    /// </summary>
     public interface IPlayer
     {
         string GetName();

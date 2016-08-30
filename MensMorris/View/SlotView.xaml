@@ -6,6 +6,7 @@
         <ResourceDictionary Source="Converter.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:SlotVM}">
+        <!-- View to present a single slot -->
         <Border BorderBrush="{Binding SlotNumber, Converter={StaticResource slotToColor}}" BorderThickness="5" CornerRadius="25">
             <Border.Style>
                 <Style TargetType="Border">

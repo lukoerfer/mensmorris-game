@@ -6,12 +6,14 @@
         <ResourceDictionary Source="Converter.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:TileVM}">
+        <!-- Provide button functionality (Command) -->
         <Button Width="10" Height="10"
                 Visibility="{Binding IsOnBoard, Converter={StaticResource boolToVisibility}, ConverterParameter='collapse'}"
                 Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='10'}"
                 Command="{Binding Select}">
             <Button.Template>
                 <ControlTemplate>
+                    <!-- Draw an ellipse for tiles -->
                     <Ellipse>
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">

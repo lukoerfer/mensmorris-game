@@ -243,7 +243,7 @@ namespace MensMorris.Engine
         }
 
         /// <summary>
-        /// Simulates any action
+        /// Simulates an action
         /// </summary>
         /// <remarks>
         /// 
@@ -272,9 +272,14 @@ namespace MensMorris.Engine
             return new MatchRevert(this);
         }
 
+        /// <summary>
+        /// Reverts any simulated action
+        /// </summary>
         public void Revert()
         {
+            // Revert each board position
             this.Board.ForEach(position => position.Revert());
+            // Revert each tile
             this.GetTiles().ForEach(tile => tile.Revert());
         }
 

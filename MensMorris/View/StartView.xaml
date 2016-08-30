@@ -29,34 +29,46 @@
                     <Run FontSize="50" FontWeight="Bold" Foreground="Blue" Text="Morris" />
                 </TextBlock.Inlines>
             </TextBlock>
+            <!-- Player selection -->
             <TextBlock Grid.Row="1" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="5"
                        Text="Player selection" FontSize="22" TextDecorations="Underline" />
+            <!-- First player -->
             <ComboBox Grid.Row="2" SelectedIndex="0" Margin="3" FontSize="18" Foreground="Red"
                       ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding FirstPlayer}" />
             <TextBlock Grid.Row="2" Grid.Column="1" Margin="2" Text="vs." FontSize="18" VerticalAlignment="Center" />
+            <!-- Second player -->
             <ComboBox Grid.Row="2" Grid.Column="2" SelectedIndex="0" Margin="3" FontSize="18" Foreground="Blue"
                       ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding SecondPlayer}" />
+            <!-- Game settings -->
             <TextBlock Grid.Row="3" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="5"
                        Text="Game settings" FontSize="22" TextDecorations="Underline"/>
+            <!-- Different selectable games -->
             <ComboBox Grid.Row="4" Grid.ColumnSpan="{StaticResource fullSpan}" SelectedIndex="0" Margin="3" FontSize="18"
                       ItemsSource="{Binding SettingsOptions}" SelectedValue="{Binding Settings}" />
+            <!-- The selected game -->
             <StackPanel Grid.Row="5" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="3"
                         DataContext="{Binding Settings}" IsEnabled="{Binding IsFixed, Converter={StaticResource boolNegate}}">
+                <!-- Ring count -->
                 <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock FontSize="14" Text="Ring count:" VerticalAlignment="Center" Margin="0 0 5 0"  />
                     <extwpf:IntegerUpDown Minimum="1" Maximum="3" FontSize="14" VerticalAlignment="Center" Value="{Binding RingCount}" Width="50" />
                 </StackPanel>
+                <!-- Center point -->
                 <CheckBox Margin="5" FontSize="14" Content="Center point" IsChecked="{Binding CenterPoint}" IsEnabled="{Binding CenterCross, Converter={StaticResource boolNegate}}"
                           HorizontalAlignment="Center" VerticalContentAlignment="Center" />
+                <!-- Center cross -->
                 <CheckBox Margin="5" FontSize="14" Content="Center cross" IsChecked="{Binding CenterCross}" IsEnabled="{Binding CenterPoint, Converter={StaticResource boolNegate}}"
                           HorizontalAlignment="Center" VerticalContentAlignment="Center" />
+                <!-- Connect corners -->
                 <CheckBox Margin="5" FontSize="14" Content="Connect diagonals" IsChecked="{Binding ConnectCorners}" 
                           HorizontalAlignment="Center" VerticalContentAlignment="Center" />
+                <!-- Tiles per slot -->
                 <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock FontSize="14" Text="Tiles per player:" VerticalAlignment="Center" Margin="0 0 5 0" />
                     <extwpf:IntegerUpDown Minimum="3" Maximum="{Binding MaxTilesPerSlot}" FontSize="14" VerticalAlignment="Center" Value="{Binding TilesPerSlot}" Width="50" />
                 </StackPanel>
             </StackPanel>
+            <!-- Start match-->
             <Button Grid.Row="6" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="0 10 0 0" FontSize="18" HorizontalAlignment="Center"
                     HorizontalContentAlignment="Center" Command="{Binding StartMatch}">
                 <Button.Template>

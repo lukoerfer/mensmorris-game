@@ -7,16 +7,25 @@ using System.Windows.Data;
 
 namespace MensMorris.Game.Helpers
 {
+    /// <summary>
+    /// Provides a converter to place elements via a margin
+    /// </summary>
     public class CenterToBorderLocationConverter : IValueConverter
     {
+        /// <summary>
+        /// Converts an elements center point to an equivalent margin
+        /// </summary>
+        /// <param name="value">The center point where to place the element</param>
+        /// <returns>A margin locating the element at the same position</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            parameter = parameter ?? string.Empty;
             if (value is Point && parameter is string)
             {
                 Point center = (Point)value;
+                // Extract the element size from the parameter
                 Size size = CenterToBorderLocationConverter.extractParameter((string)parameter);
-                Thickness border = new Thickness(center.X - size.Width / 2, center.Y - size.Height / 2, 0, 0);
-                return border;
+                return new Thickness(center.X - size.Width / 2, center.Y - size.Height / 2, 0, 0);
             }
             else
             {
@@ -32,8 +41,11 @@ namespace MensMorris.Game.Helpers
 
         private static Size extractParameter(string parameter)
         {
-            string[] sizeStrings = parameter.Split(new char[] { ' ' }, 2);
-            IEnumerable<int> sizes = sizeStrings.Select(str => parseInt(str)).Where(res => res.HasValue).Select(res => res.Value);
+            IEnumerable<int> sizes = parameter
+                .Split(new char[] { ' ' }, 2)
+                .Select(str => parseInt(str))
+                .Where(res => res.HasValue)
+                .Select(res => res.Value);
             return new Size(sizes.FirstOrDefault(), sizes.LastOrDefault());
         }
 

@@ -6,11 +6,13 @@
         <ResourceDictionary Source="Converter.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:TargetVM}">
+        <!-- Provide button functionality (Command) -->
         <Button Height="10" Width="10"
                 Margin="{Binding Location, Converter={StaticResource centerToBorder}, ConverterParameter='10'}"
                 Command="{Binding Choose}">
             <Button.Template>
                 <ControlTemplate>
+                    <!-- Draw a semi-transparent ellipse for targets -->
                     <Ellipse Opacity="0.5" Fill="{Binding SlotNumber, Converter={StaticResource slotToColor}}" />
                 </ControlTemplate>
             </Button.Template>
