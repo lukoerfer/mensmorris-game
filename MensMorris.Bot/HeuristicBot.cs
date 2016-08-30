@@ -10,14 +10,15 @@ namespace MensMorris.Bot
 {
     public class HeuristicBot : IPlayer
     {
-        private static int[] PlaceCoefficients = new int[] { 18, 26, 1, 9, 10, 7, 8 };
-        private static int[] MoveCoefficients = new int[] { 18, 26, 1, 9, 10, 7, 8 };
-        private static int[] FlyCoefficients = new int[] { 18, 26, 1, 9, 10, 7, 8 };
+        private static int[] PlaceCoefficients = new int[] { 18, 1, 26, 1, 9, 10, 7, 8 };
+        private static int[] MoveCoefficients = new int[] { 18, 1, 26, 1, 9, 10, 7, 8 };
+        private static int[] FlyCoefficients = new int[] { 18, 1, 26, 1, 9, 10, 7, 8 };
 
         private static Func<Slot, int>[] SlotProperties = new Func<Slot, int>[]
         {
+            slot => slot.GetPossibleMoveCount(),
             slot => slot.GetMorrisCount(),
-            slot => slot.GetBlockedPieceCount(),
+            slot => slot.GetBlockedTileCount(),
             slot => slot.GetTilesOnBoard().Count,
             slot => slot.GetTwoPieceConfigurationCount(),
             slot => slot.GetThreePieceConfigurationCount(),
@@ -68,7 +69,7 @@ namespace MensMorris.Bot
             Slot me = action.Executing, opponent = me.GetOpponent();
             // Calculate the property differences between the slots and apply the coefficients
             return HeuristicBot.SlotProperties
-                .Select((property, index) => coefficients[index] * (property(me) - property(opponent)))
+                .Select((property, index) => coefficients[index + 1] * (property(me) - property(opponent)))
                 .Aggregate((x, y) => x + y);
         }
 
@@ -76,7 +77,14 @@ namespace MensMorris.Bot
 
     public static class HeuristicBotHelpers
     {
-        public static int GetBlockedPieceCount(this Slot slot)
+        public static int GetPossibleMoveCount(this Slot slot)
+        {
+            return slot.GetTilesOnBoard()
+                .Select(tile => tile.At.GetNeighbors().Count(neigh => neigh.IsFree))
+                .Aggregate(0, (free1, free2) => free1 + free2);
+        }
+
+        public static int GetBlockedTileCount(this Slot slot)
         {
             return slot.GetTilesOnBoard()
                 .Count(tile => !tile.At.GetNeighbors()
@@ -85,12 +93,26 @@ namespace MensMorris.Bot
 
         public static int GetMorrisCount(this Slot slot)
         {
-            return 1;
+            return slot.GetTilesOnBoard()
+                .Select(tile => tile.MillCount())
+                .Aggregate(0, (c1, c2) => c1 + c2) / 3;
         }
 
         public static int GetDoubleMorrisCount(this Slot slot)
         {
-            return 0;
+            return slot.GetTilesOnBoard()
+                .Select(tile => tile.MillCount())
+                .Count(millCount => millCount > 1);
+        }
+
+        public static int MillCount(this Tile tile)
+        {
+            return DirectionHelpers.Enumerate()
+                .Where(dir => tile.Owner.DoesOwn(tile.At.Neighbor(dir)) &&
+                (tile.Owner.DoesOwn(tile.At.Neighbor(dir.Opposite())) || tile.Owner.DoesOwn(tile.At.Neighbor(dir).Neighbor(dir))))
+                .Select(dir => dir.ToMain())
+                .Distinct()
+                .Count();
         }
 
         public static int GetTwoPieceConfigurationCount(this Slot slot)

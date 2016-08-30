@@ -1,7 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                    xmlns:local="clr-namespace:MensMorris.Game.View"
                     xmlns:extwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:vm="clr-namespace:MensMorris.Game.ViewModel">
     <ResourceDictionary.MergedDictionaries>
@@ -9,12 +7,6 @@
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:StartVM}">
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
-            <Grid.Resources>
-                <sys:Int32 x:Key="FullSpan">
-                    <!-- Int32 MaxValue-->
-                    2147483647
-                </sys:Int32>
-            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -29,25 +21,26 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="0 0 0 20"
+            <!-- Logo -->
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="0 0 0 20"
                        HorizontalAlignment="Center">
                 <TextBlock.Inlines>
                     <Run FontSize="50" FontWeight="Bold" Foreground="Red" Text="Mens " />
                     <Run FontSize="50" FontWeight="Bold" Foreground="Blue" Text="Morris" />
                 </TextBlock.Inlines>
             </TextBlock>
-            <TextBlock Grid.Row="1" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="5"
+            <TextBlock Grid.Row="1" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="5"
                        Text="Player selection" FontSize="22" TextDecorations="Underline" />
             <ComboBox Grid.Row="2" SelectedIndex="0" Margin="3" FontSize="18" Foreground="Red"
                       ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding FirstPlayer}" />
             <TextBlock Grid.Row="2" Grid.Column="1" Margin="2" Text="vs." FontSize="18" VerticalAlignment="Center" />
             <ComboBox Grid.Row="2" Grid.Column="2" SelectedIndex="0" Margin="3" FontSize="18" Foreground="Blue"
                       ItemsSource="{Binding PlayerOptions}" SelectedValue="{Binding SecondPlayer}" />
-            <TextBlock Grid.Row="3" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="5"
+            <TextBlock Grid.Row="3" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="5"
                        Text="Game settings" FontSize="22" TextDecorations="Underline"/>
-            <ComboBox Grid.Row="4" Grid.ColumnSpan="{StaticResource FullSpan}" SelectedIndex="0" Margin="3" FontSize="18"
+            <ComboBox Grid.Row="4" Grid.ColumnSpan="{StaticResource fullSpan}" SelectedIndex="0" Margin="3" FontSize="18"
                       ItemsSource="{Binding SettingsOptions}" SelectedValue="{Binding Settings}" />
-            <StackPanel Grid.Row="5" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="3"
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="3"
                         DataContext="{Binding Settings}" IsEnabled="{Binding IsFixed, Converter={StaticResource boolNegate}}">
                 <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock FontSize="14" Text="Ring count:" VerticalAlignment="Center" Margin="0 0 5 0"  />
@@ -64,8 +57,25 @@
                     <extwpf:IntegerUpDown Minimum="3" Maximum="{Binding MaxTilesPerSlot}" FontSize="14" VerticalAlignment="Center" Value="{Binding TilesPerSlot}" Width="50" />
                 </StackPanel>
             </StackPanel>
-            <Button Grid.Row="6" Grid.ColumnSpan="{StaticResource FullSpan}" Margin="0 10 0 0" Padding="10 2" FontSize="18" HorizontalAlignment="Center"
-                    HorizontalContentAlignment="Center" Command="{Binding StartMatch}" Content="Start Match" />
+            <Button Grid.Row="6" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="0 10 0 0" FontSize="18" HorizontalAlignment="Center"
+                    HorizontalContentAlignment="Center" Command="{Binding StartMatch}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border BorderBrush="Black" BorderThickness="2" CornerRadius="20" Padding="10 2">
+                            <TextBlock Text="Start Match" FontSize="30" FontWeight="Bold" Foreground="Black" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="2" ShadowDepth="0" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

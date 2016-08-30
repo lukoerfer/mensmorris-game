@@ -5,27 +5,50 @@ using System.Threading;
 
 namespace MensMorris.Engine
 {
+    /// <summary>
+    /// Represents a match of Mens Morris
+    /// </summary>
     public class Match
     {
+        /// <summary>
+        /// Notifies about the completion of the match
+        /// </summary>
         public event EventHandler Finished;
 
+        /// <summary>
+        /// Gets the settings
+        /// </summary>
         public Settings Settings { get; private set; }
 
+        // A list of all positions on the board
         private List<BoardPosition> Board;
 
+        // Both slots in an array to iterate over
         private Slot[] Slots;
 
+        /// <summary>
+        /// Gets the current game phase (Placing or Moving)
+        /// </summary>
         public GamePhase Phase { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the wait time before each round
+        /// </summary>
         public TimeSpan WaitTime { get; set; }
 
+        /// <summary>
+        /// Creates a new Mens Morris match
+        /// </summary>
+        /// <param name="settings">The match settings</param>
+        /// <param name="firstPlayer">The player for the first slot</param>
+        /// <param name="secondPlayer">The player for the second slot</param>
         public Match(Settings settings, IPlayer firstPlayer, IPlayer secondPlayer)
         {
             // Set default round sleep time to one 1ms
-            this.WaitTime = new TimeSpan(0, 0, 0, 0, 500);
-            // Set the game settings
+            this.WaitTime = new TimeSpan(0, 0, 0, 0, 1);
+            // Set the match settings
             this.Settings = settings;
-            // Set initial phase
+            // Set initial phase to Placing
             this.Phase = GamePhase.PlacingPhase;
             // Create player slots
             this.Slots = new Slot[2];
@@ -33,11 +56,14 @@ namespace MensMorris.Engine
             this.Slots[1] = new Slot(this, secondPlayer, 1);
             // Build the board
             this.Board = new List<BoardPosition>();
+            // Arrays to remember middle and corner positions for connections between the rings
             BoardPosition[] middles = new BoardPosition[4];
             BoardPosition[] corners = new BoardPosition[4];
             if (this.Settings.CenterPoint)
             {
+                // Create a point in the center of the board
                 BoardPosition center = new BoardPosition(this, 0, 0);
+                // Setup the connection with each border and each corner point
                 for (int i = 0; i <= 3; i++)
                 {
                     middles[i] = center;
@@ -59,7 +85,7 @@ namespace MensMorris.Engine
                         corners[0].SetNeighbor(direction.Turn(5 /* 225° */), first);
                         first.SetNeighbor(direction.Turn(5 /* 225° */).Opposite(), corners[0]);
                     }
-                    // Remember middle position
+                    // Remember corner position
                     corners[0] = first;
                 }
                 this.Board.Add(first);
@@ -67,6 +93,7 @@ namespace MensMorris.Engine
                 BoardPosition previous = first;
                 for (int sideNumber = 0; sideNumber <= 3; sideNumber++) // For each side
                 {
+                    // Get the onwards direction for the ring side
                     direction = DirectionHelpers.ForSide(sideNumber);
                     for (int positionNumber = 1; positionNumber <= (sideNumber < 3 ? 2 : 1); positionNumber++) // For each position
                     {
@@ -107,7 +134,7 @@ namespace MensMorris.Engine
                         previous = position;
                     }
                 }
-                // Connect the first and the last position
+                // Connect the first and the last position of a ring
                 previous.SetNeighbor(direction, first);
                 first.SetNeighbor(direction.Opposite(), previous);
             }
@@ -115,22 +142,36 @@ namespace MensMorris.Engine
 
         private bool shouldStop = false;
 
+        /// <summary>
+        /// Start the match
+        /// </summary>
         public void Start()
         {
-            (new Thread(() => this.GameLoop())).Start();
+            // Start in a new background thread
+            Thread matchThread = new Thread(this.MatchLoop);
+            matchThread.IsBackground = true;
+            matchThread.Start();
         }
 
+        /// <summary>
+        /// Stop the match
+        /// </summary>
         public void Stop()
         {
+            // Reset the match loop condition
             this.shouldStop = true;
         }
 
-        private void GameLoop()
+        /// <summary>
+        /// The match loop
+        /// </summary>
+        private void MatchLoop()
         {
             // Start with first slot
             Slot currentSlot = this.GetSlot(0);
             // Required for kick condition check
             Tile usedTile = null;
+            // Required for phase transition check
             int placingCounter = 1;
             while (!this.IsGameDone() && !this.shouldStop)
             {
@@ -146,9 +187,9 @@ namespace MensMorris.Engine
                         // Revert any simulation
                         this.Revert();
                         // Execute the action
-                        placeAction.Tile.To(placeAction.Target);
+                        if (placeAction != null) placeAction.Tile.To(placeAction.Target);
                         // Remember the used tile for kick condition
-                        usedTile = placeAction.Tile;
+                        usedTile = (placeAction != null) ? placeAction.Tile : null;
                         // Check for phase transition
                         if (placingCounter++ == this.Settings.TilesPerSlot * 2) this.Phase = GamePhase.MovingPhase;
                         break;
@@ -158,12 +199,15 @@ namespace MensMorris.Engine
                         // Revert any simulation
                         this.Revert();
                         // Execute the action
-                        moveAction.Tile.To(moveAction.Target);
+                        if (moveAction != null) moveAction.Tile.To(moveAction.Target);
+                        // Remember the used tile for kick condition
                         usedTile = (moveAction != null) ? moveAction.Tile : null;
                         break;
                 }
+                // Check for the used tile
                 if (usedTile != null)
                 {
+                    // Check for a formed mill => allow kick action
                     if (usedTile.FormsMill())
                     {
                         // Collect possible actions and let the player select one
@@ -176,6 +220,7 @@ namespace MensMorris.Engine
                 }
                 else
                 {
+                    // This means the slot looses the game
                     currentSlot.NoPossibleMove = true;
                 }
                 // Reset OnTurn state for current slot
@@ -187,12 +232,26 @@ namespace MensMorris.Engine
             this.Finished?.BeginInvoke(this, EventArgs.Empty, this.Finished.EndInvoke, null);
         }
 
+        /// <summary>
+        /// Gets a list of all board positions
+        /// </summary>
+        /// <returns></returns>
         public List<BoardPosition> GetBoard()
         {
             // Copy list to prevent manipulation
             return this.Board.ToList();
         }
 
+        /// <summary>
+        /// Simulates any action
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="action">The action to simulate</param>
+        /// <returns>
+        /// 
+        /// </returns>
         public MatchRevert SimulateAction(BaseAction action)
         {
             if (action is PlaceAction)

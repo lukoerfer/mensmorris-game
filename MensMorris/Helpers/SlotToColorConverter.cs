@@ -8,19 +8,19 @@ namespace MensMorris.Game.Helpers
     public class SlotToColorConverter : IValueConverter
     {
 
-        private SolidColorBrush[] SlotColors = new SolidColorBrush[]
+        private static SolidColorBrush[] SlotColors = new SolidColorBrush[]
         {
             Brushes.Red,
             Brushes.Blue
         };
 
-        private String[] SlotColorNames = new String[]
+        private static String[] SlotColorNames = new String[]
         {
             "Red",
             "Blue"
         };
 
-        private SolidColorBrush[] LightSlotColors = new SolidColorBrush[]
+        private static SolidColorBrush[] LightSlotColors = new SolidColorBrush[]
         {
             Brushes.Tomato,
             Brushes.RoyalBlue
@@ -37,12 +37,12 @@ namespace MensMorris.Game.Helpers
                 // Check for parameters
                 if (strParameter.Equals("name"))
                 {
-                    return this.SlotColorNames[intValue];
+                    return SlotToColorConverter.SlotColorNames[intValue];
                 }
                 if (strParameter.Equals("light")) {
-                    return this.LightSlotColors[intValue];
+                    return SlotToColorConverter.LightSlotColors[intValue];
                 }
-                return this.SlotColors[intValue];
+                return SlotToColorConverter.SlotColors[intValue];
             }
             else
             {
@@ -54,6 +54,22 @@ namespace MensMorris.Game.Helpers
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Additional slot to color conversion (in-code usage)
+        /// </summary>
+        public static Brush GetColor(int slot)
+        {
+            return SlotToColorConverter.SlotColors[slot];
+        }
+
+        /// <summary>
+        /// Additional slot to color name conversion (in-code usage)
+        /// </summary>
+        public static string GetColorName(int slot)
+        {
+            return SlotToColorConverter.SlotColorNames[slot];
         }
     }
 }

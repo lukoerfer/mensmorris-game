@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace MensMorris.Engine
 {
+    /// <summary>
+    /// Represents a player slot in a Mens Morris match
+    /// </summary>
     public class Slot
     {
         public event EventHandler IsOnTurnChanged;
@@ -57,7 +60,7 @@ namespace MensMorris.Engine
             // Let the player select one action
             PlaceAction chosenAction = this.Player.ChoosePlaceAction(possibleActions, match);
             // Return action if it is possible
-            if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action");
+            if (!possibleActions.Contains(chosenAction)) return null;
             return chosenAction;
         }
 
@@ -79,7 +82,7 @@ namespace MensMorris.Engine
                 // Let the player select one action
                 MoveAction chosenAction = this.Player.ChooseMoveAction(possibleActions, match);
                 // Return action if it is possible
-                if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action!");
+                if (!possibleActions.Contains(chosenAction)) return null;
                 return chosenAction;
             }
         }
@@ -98,7 +101,7 @@ namespace MensMorris.Engine
             // Let the player select one action
             KickAction chosenAction = this.Player.ChooseKickAction(possibleActions, match);
             // Return action if it is possible
-            if (!possibleActions.Contains(chosenAction)) throw new Exception("Illegal player action");
+            if (!possibleActions.Contains(chosenAction)) return null;
             return chosenAction;
         }
 

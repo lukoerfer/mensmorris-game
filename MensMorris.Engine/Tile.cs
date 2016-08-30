@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace MensMorris.Engine
 {
+    /// <summary>
+    /// Represents a tile / piece in a Mens Morris match
+    /// </summary>
     public class Tile
     {
         public event EventHandler AtChanged;

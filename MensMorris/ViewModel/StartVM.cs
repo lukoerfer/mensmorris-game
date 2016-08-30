@@ -16,6 +16,9 @@ namespace MensMorris.Game.ViewModel
     [ImplementPropertyChanged]
     public class StartVM
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public event Action<SettingsVM, PlayerOptionVM, PlayerOptionVM> StartDone;
 
         public List<PlayerOptionVM> PlayerOptions { get; set; }
@@ -29,6 +32,9 @@ namespace MensMorris.Game.ViewModel
 
         public ICommand StartMatch { get; set; }
 
+        /// <summary>
+        /// Creates a new Start view model
+        /// </summary>
         public StartVM()
         {
             // Init player options
@@ -47,6 +53,9 @@ namespace MensMorris.Game.ViewModel
             this.StartMatch = new RelayCommand(() => this.OnStartMatch());
         }
 
+        /// <summary>
+        /// Handles the start of a match
+        /// </summary>
         private void OnStartMatch()
         {
             this.StartDone?.Invoke(this.Settings, this.FirstPlayer, this.SecondPlayer);

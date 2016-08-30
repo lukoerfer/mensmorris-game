@@ -1,15 +1,28 @@
 ﻿namespace MensMorris.Engine
 {
+    /// <summary>
+    /// Base class for Mens Morris actions
+    /// </summary>
     public abstract class BaseAction
     {
+        /// <summary>
+        /// Gets the slot executing this action
+        /// </summary>
         public Slot Executing { get; private set; }
 
+        /// <summary>
+        /// Base constructor for Mens Morris actions
+        /// </summary>
+        /// <param name="executing">The slot executing the action</param>
         public BaseAction(Slot executing)
         {
             this.Executing = executing;
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class PlaceAction : BaseAction
     {
         public Tile Tile { get; private set; }

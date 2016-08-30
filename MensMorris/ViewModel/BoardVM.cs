@@ -12,7 +12,7 @@ namespace MensMorris.Game.ViewModel
     [ImplementPropertyChanged]
     public class BoardVM
     {
-        public event EventHandler<BaseAction> ActionChosen;
+        public event Action<BaseAction> ActionChosen;
 
         public List<PositionVM> Positions { get; private set; }
 
