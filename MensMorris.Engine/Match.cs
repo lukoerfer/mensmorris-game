@@ -183,7 +183,7 @@ namespace MensMorris.Engine
                 {
                     case GamePhase.PlacingPhase:
                         // Collect possible actions and let the player select one
-                        PlaceAction placeAction = currentSlot.HandlePlaceAction(this);
+                        PlaceAction placeAction = currentSlot.HandlePlaceAction();
                         // Revert any simulation
                         this.Revert();
                         // Execute the action
@@ -195,7 +195,7 @@ namespace MensMorris.Engine
                         break;
                     case GamePhase.MovingPhase:
                         // Collect possible actions and let the player select one
-                        MoveAction moveAction = currentSlot.HandleMoveAction(this);
+                        MoveAction moveAction = currentSlot.HandleMoveAction();
                         // Revert any simulation
                         this.Revert();
                         // Execute the action
@@ -211,7 +211,7 @@ namespace MensMorris.Engine
                     if (usedTile.FormsMill())
                     {
                         // Collect possible actions and let the player select one
-                        KickAction kickAction = currentSlot.HandleKickAction(this);
+                        KickAction kickAction = currentSlot.HandleKickAction();
                         // Revert any simulation
                         this.Revert();
                         // Execute the action

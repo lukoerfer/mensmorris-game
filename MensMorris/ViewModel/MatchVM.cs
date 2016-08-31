@@ -17,7 +17,7 @@ namespace MensMorris.Game.ViewModel
     public class MatchVM : IPlayer
     {
         /// <summary>
-        /// 
+        /// Notifies about a done match without a rematch
         /// </summary>
         public event Action MatchDone;
 
