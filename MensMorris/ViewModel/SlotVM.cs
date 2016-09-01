@@ -5,6 +5,9 @@ using PropertyChanged;
 
 namespace MensMorris.Game.ViewModel
 {
+    /// <summary>
+    /// View model for a player slot
+    /// </summary>
     [ImplementPropertyChanged]
     public class SlotVM
     {
@@ -27,7 +30,7 @@ namespace MensMorris.Game.ViewModel
             this.IsOnTurn = this.Model.IsOnTurn;
         }
 
-        private void OnIsOnTurnChanged(object sender, EventArgs e)
+        private void OnIsOnTurnChanged(object sender, bool e)
         {
             this.IsOnTurn = this.Model.IsOnTurn;
         }

@@ -3,6 +3,9 @@ using System;
 
 namespace MensMorris.Game.ViewModel
 {
+    /// <summary>
+    /// View model for a player option
+    /// </summary>
     public class PlayerOptionVM
     {
         public Type PlayerType { get; set; }

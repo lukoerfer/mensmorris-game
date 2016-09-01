@@ -4,6 +4,9 @@ using MensMorris.Engine;
 
 namespace MensMorris.Game.ViewModel
 {
+    /// <summary>
+    /// View model for a board position
+    /// </summary>
     public class PositionVM
     {
         private BoardVM Board;

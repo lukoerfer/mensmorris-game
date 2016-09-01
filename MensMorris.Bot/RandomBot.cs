@@ -6,6 +6,9 @@ using MensMorris.Engine;
 
 namespace MensMorris.Bot
 {
+    /// <summary>
+    /// Implements a bot for a Mens Morris game deciding by pure chance
+    /// </summary>
     public class RandomBot : IPlayer
     {
         // Use common random number generator for all random bots
@@ -19,6 +22,8 @@ namespace MensMorris.Bot
             // Init the random number generator
             RandomBot.Generator = new Random();
         }
+
+        #region | Player interface | 
 
         public string GetName()
         {
@@ -39,6 +44,8 @@ namespace MensMorris.Bot
         {
             return this.ChooseAction(possibleActions.Cast<BaseAction>().ToList(), match) as KickAction;
         }
+
+        #endregion // Player interface
 
         private BaseAction ChooseAction(List<BaseAction> possibleActions, Match match)
         {

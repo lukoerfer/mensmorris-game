@@ -16,9 +16,6 @@ namespace MensMorris.Game.ViewModel
     [ImplementPropertyChanged]
     public class StartVM
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public event Action<SettingsVM, PlayerOptionVM, PlayerOptionVM> StartDone;
 
         public List<PlayerOptionVM> PlayerOptions { get; set; }

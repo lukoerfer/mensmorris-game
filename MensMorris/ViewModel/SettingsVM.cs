@@ -10,6 +10,9 @@ using MensMorris.Engine;
 
 namespace MensMorris.Game.ViewModel
 {
+    /// <summary>
+    /// View model for a set of game settings
+    /// </summary>
     [ImplementPropertyChanged]
     public class SettingsVM
     {
@@ -31,7 +34,7 @@ namespace MensMorris.Game.ViewModel
         {
             get
             {
-                int maxTiles = this.RingCount * 4 - 1;
+                int maxTiles = this.RingCount * 4;
                 if (this.TilesPerSlot > maxTiles) this.TilesPerSlot = maxTiles;
                 return maxTiles;
             }
@@ -41,7 +44,7 @@ namespace MensMorris.Game.ViewModel
         {
             this.Name = name;
             this.IsFixed = isFixed;
-            // Extract the single rules
+            // Copies the preset settings
             this.RingCount = settings.RingCount;
             this.CenterPoint = settings.CenterPoint;
             this.CenterCross = settings.CenterCross;

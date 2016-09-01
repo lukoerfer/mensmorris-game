@@ -7,6 +7,9 @@ using MensMorris.Engine;
 
 namespace MensMorris.Game.ViewModel
 {
+    /// <summary>
+    /// View model for a kick action
+    /// </summary>
     public class KickVM
     {
         private BoardVM Parent;

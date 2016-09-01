@@ -130,7 +130,7 @@ namespace MensMorris.Engine
         }
 
         /// <summary>
-        /// Reverts any changes done by any simulations
+        /// Reverts any changes done to this position by any simulation
         /// </summary>
         /// <remarks>
         /// This can only be done from inside the game engine
@@ -152,6 +152,9 @@ namespace MensMorris.Engine
     /// </summary>
     public class BoardPositionSnapshot
     {
+        /// <summary>
+        /// Gets the tile located on the position before the simulation
+        /// </summary>
         public Tile OriginalCurrent { get; private set; }
 
         /// <summary>

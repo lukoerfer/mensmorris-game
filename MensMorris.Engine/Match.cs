@@ -173,7 +173,7 @@ namespace MensMorris.Engine
             Tile usedTile = null;
             // Required for phase transition check
             int placingCounter = 1;
-            while (!this.IsGameDone() && !this.shouldStop)
+            while (!this.IsMatchDone() && !this.shouldStop)
             {
                 // Set OnTurn state for current slot
                 currentSlot.SetOnTurn(true);
@@ -246,13 +246,14 @@ namespace MensMorris.Engine
         /// Simulates an action
         /// </summary>
         /// <remarks>
-        /// 
+        /// The action simulated via this function can be reverted at any time by using Revert or the auto-revert functionality:
+        /// When this function is called in the beginning of a 'using' scope, the Revert function is called automatically after leaving the using scope.
         /// </remarks>
         /// <param name="action">The action to simulate</param>
         /// <returns>
-        /// 
+        /// An auto-revert object for a 'using' scope
         /// </returns>
-        public MatchRevert SimulateAction(BaseAction action)
+        public AutoRevert SimulateAction(BaseAction action)
         {
             if (action is PlaceAction)
             {
@@ -269,7 +270,8 @@ namespace MensMorris.Engine
                 KickAction kickAction = action as KickAction;
                 kickAction.OpponentTile.SimulateTo(null);
             }
-            return new MatchRevert(this);
+            // Return the auto-revert object
+            return new AutoRevert(this);
         }
 
         /// <summary>
@@ -283,16 +285,25 @@ namespace MensMorris.Engine
             this.GetTiles().ForEach(tile => tile.Revert());
         }
 
+        /// <summary>
+        /// Gets a list of the slots participating in this match
+        /// </summary>
         public List<Slot> GetSlots()
         {
             return this.Slots.ToList();
         }
 
+        /// <summary>
+        /// Gets the slot of a specific number
+        /// </summary>
         public Slot GetSlot(int number)
         {
             return this.Slots[number];
         }
 
+        /// <summary>
+        /// Gets all tiles used in this match
+        /// </summary>
         public List<Tile> GetTiles()
         {
             return this.Slots
@@ -301,6 +312,9 @@ namespace MensMorris.Engine
                 .ToList();
         }
 
+        /// <summary>
+        /// Gets all empty positions on the board of this match
+        /// </summary>
         public List<BoardPosition> GetEmptyPositions()
         {
             return this.Board
@@ -308,27 +322,52 @@ namespace MensMorris.Engine
                 .ToList();
         }
 
-        public bool IsGameDone()
+        /// <summary>
+        /// Indicates whether the match is done and one slot has won the game
+        /// </summary>
+        public bool IsMatchDone()
         {
             return this.Phase == GamePhase.MovingPhase && this.Slots.Any(slot => slot.HasLost);
         }
 
+        /// <summary>
+        /// Determines the slot which won the match when it is finished
+        /// </summary>
+        /// <returns>The winning slot or null, when the match is not done</returns>
         public Slot GetWinnerSlot()
         {
-            return this.IsGameDone() ? this.Slots.Single(slot => !slot.HasLost) : null;
+            return this.IsMatchDone() ? this.Slots.Single(slot => !slot.HasLost) : null;
         }
 
     }
 
-    public class MatchRevert : IDisposable
+    /// <summary>
+    /// Provides the auto-revert functionality for matches with help of the 'using' keyword
+    /// </summary>
+    /// <remarks>
+    /// .NET offers the possibility to free ressources automatically with the 'using' keyword and the IDisposable interface.
+    /// When a function returns an IDisposable and it is called in the beginning of a 'using' scope, the Dispose function of the IDisposable is called automatically after using the scope.
+    /// This is used in this case to auto-revert the changes made by the SimulateAction function of a match.
+    /// </remarks>
+    public class AutoRevert : IDisposable
     {
         private Match SimulatedMatch;
 
-        public MatchRevert(Match simulatedMatch)
+        /// <summary>
+        /// Creates a new auto revert object for a given match
+        /// </summary>
+        /// <param name="simulatedMatch">The simulated match</param>
+        public AutoRevert(Match simulatedMatch)
         {
             this.SimulatedMatch = simulatedMatch;
         }
 
+        /// <summary>
+        /// Reverts any changes made to the assigned simulated match
+        /// </summary>
+        /// <remarks>
+        /// This is called automatically at the end of the 'using' scope.
+        /// </remarks>
         public void Dispose()
         {
             this.SimulatedMatch.Revert();

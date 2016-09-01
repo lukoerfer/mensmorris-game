@@ -6,7 +6,7 @@
         <ResourceDictionary Source="Converter.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type vm:StartVM}">
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="350">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -25,7 +25,7 @@
             <TextBlock Grid.Row="0" Grid.ColumnSpan="{StaticResource fullSpan}" Margin="0 0 0 20"
                        HorizontalAlignment="Center">
                 <TextBlock.Inlines>
-                    <Run FontSize="50" FontWeight="Bold" Foreground="Red" Text="Mens " />
+                    <Run FontSize="50" FontWeight="Bold" Foreground="Red" Text="Men's " />
                     <Run FontSize="50" FontWeight="Bold" Foreground="Blue" Text="Morris" />
                 </TextBlock.Inlines>
             </TextBlock>

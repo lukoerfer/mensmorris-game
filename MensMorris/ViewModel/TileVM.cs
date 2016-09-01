@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -8,10 +9,12 @@ using GalaSoft.MvvmLight.CommandWpf;
 using PropertyChanged;
 
 using MensMorris.Engine;
-using System.Collections.Generic;
 
 namespace MensMorris.Game.ViewModel
 {
+    /// <summary>
+    /// View model for a tile
+    /// </summary>
     [ImplementPropertyChanged]
     public class TileVM
     {
